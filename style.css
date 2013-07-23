@@ -1,0 +1,38 @@
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  background-image: -webkit-linear-gradient(
+    bottom, white, #ccc
+  );
+  background-image: linear-gradient(
+    bottom, white, #ccc
+  );
+}
+#counter {
+  padding-top: 200px;
+  text-align: center;
+  background-image: -webkit-linear-gradient(
+    top, white, #ccc
+  );
+  background-image: linear-gradient(
+    top, white, #ccc
+  );
+}
+#counter header {
+  font: 36px/72px Arial, sans-serif;
+  color: #777;
+}
+#counter section {
+  font: 48px Arial, sans-serif;
+}
+#counter section input {
+  width: 58px;
+  height: 54px;
+  font: 48px Arial, sans-serif;
+}
+
+.hidden {
+  display: none;
+}
