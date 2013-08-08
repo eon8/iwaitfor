@@ -1,7 +1,9 @@
 define(['backbone'], function(Backbone) {
     
   var CounterModel = Backbone.Model.extend({
-      
+     
+    urlRoot : '/z',
+
     timer_id: null,
 
     update: function() {

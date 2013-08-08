@@ -12,7 +12,8 @@ define(['backbone', 'model/counter', 'text!jst/counter.jst'], function(Backbone,
     
     events: {
       'click #numbers': 'edit',
-      'click #numbersEdit': 'editclick'
+      'click #numbersEdit': 'editclick',
+      'click #save': 'save'
     },
     
     edit: function(e) {
@@ -21,14 +22,14 @@ define(['backbone', 'model/counter', 'text!jst/counter.jst'], function(Backbone,
       this.$('#numbers').addClass('hidden');
       this.$('#numbersEdit').removeClass('hidden');
 
-      $(document).one('click', this.save.bind(this));
+      $(document).one('click', this.set.bind(this));
     },
     
     editclick: function(e) {
       e.stopPropagation();
     },
     
-    save: function(e) {
+    set: function(e) {
       this.model.edit(
         this.$('#numbersEdit [name=hours]').val(),
         this.$('#numbersEdit [name=minutes]').val(),
@@ -38,6 +39,10 @@ define(['backbone', 'model/counter', 'text!jst/counter.jst'], function(Backbone,
       this.$('#numbersEdit').addClass('hidden');
       this.$('#numbers').removeClass('hidden');
       this.model.start();
+    },
+    
+    save: function() {
+      this.model.save();
     },
 
     render: function() {
