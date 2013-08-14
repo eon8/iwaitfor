@@ -1,0 +1,2 @@
+logs for all stages
+git repo + distribution
