@@ -10,7 +10,7 @@ body {
     bottom, white, #ccc
   );
 }
-#counter {
+#timer {
   padding-top: 200px;
   text-align: center;
   background-image: -webkit-linear-gradient(
@@ -20,14 +20,14 @@ body {
     top, white, #ccc
   );
 }
-#counter header {
+#timer header {
   font: 36px/72px Arial, sans-serif;
   color: #777;
 }
-#counter section {
+#timer section {
   font: 48px Arial, sans-serif;
 }
-#counter section input {
+#timer section input {
   width: 58px;
   height: 54px;
   font: 48px Arial, sans-serif;

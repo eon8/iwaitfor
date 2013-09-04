@@ -9,25 +9,25 @@
 
 <title>${metadata['title']}</title>
 
-<script src="static/js/debug.js"></script>
-<script data-main="static/js/bootstrap" src="static/js/require.js"></script>
+<script src="/static/js/debug.js"></script>
+<script data-main="/static/js/bootstrap" src="/static/js/lib/require.js"></script>
 
 <!--script src="//vk.com/js/api/openapi.js?98"></script>
 <script>
   VK.init({apiId: 3782556, onlyWidgets: true});
 </script-->
 
-<link rel="stylesheet" href="static/reset.css">
-<link rel="stylesheet" href="static/style.css">
+<link rel="stylesheet" href="/static/reset.css">
+<link rel="stylesheet" href="/static/style.css">
 
 </head>
 
 <body>
-  <article id="counter">
+  <article id="timer">
   </article>
 
   <script>
-    var counter_data = JSON.parse('${attributes|n}');
+    var timer_data = JSON.parse('${attributes|n}');
   </script>
 
   <!--div id="vk_comments"></div>

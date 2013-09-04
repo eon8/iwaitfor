@@ -1,6 +1,6 @@
 // App
 
-define(['backbone', 'model/counter', 'text!jst/counter.jst'], function(Backbone, CounterModel, html) {
+define(['backbone', 'model/timer', 'text!jst/timer.jst'], function(Backbone, TimerModel, html) {
   
   var AppView = Backbone.View.extend({
       
@@ -34,11 +34,11 @@ define(['backbone', 'model/counter', 'text!jst/counter.jst'], function(Backbone,
         this.$('#numbersEdit [name=hours]').val(),
         this.$('#numbersEdit [name=minutes]').val(),
         this.$('#numbersEdit [name=seconds]').val()
-      );    
+      );
+      this.model.once('change', this.model.start);
       
       this.$('#numbersEdit').addClass('hidden');
       this.$('#numbers').removeClass('hidden');
-      this.model.start();
     },
     
     save: function() {
@@ -57,19 +57,21 @@ define(['backbone', 'model/counter', 'text!jst/counter.jst'], function(Backbone,
 
     init: function() {
       
-      var Counter = new CounterModel(counter_data);
+      var Timer = new TimerModel(timer_data);
 
       // DOM ready
       $(function() {
           
         var app_view = new AppView({
   
-          model: Counter,
-          el: $('#counter')
+          model: Timer,
+          el: $('#timer')
   
-        });
-      
-        Counter.start();
+        }).render();
+
+        if (Timer.get('id')) {
+            Timer.start();
+        }
         
       });
       

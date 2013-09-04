@@ -1,4 +1,4 @@
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound, HTTPBadRequest
 from pyramid.view import view_config
 import json
 
@@ -10,10 +10,13 @@ from .models import (
 
 @view_config(route_name='view_timer_by_name', renderer='iwaitfor:static/index.html')
 def view_timer_by_name(request):
-    attributes = {}
+    attributes = get_default_attributes()
     metadata = get_default_metadata()
     if request.matchdict['timername']:
-        one = DBSession.query(Timer).filter(Timer.name == request.matchdict['timername']).first()
+        one = DBSession.query(Timer).\
+            filter(Timer.name == request.matchdict['timername']).\
+            filter(Timer.is_approved == True).\
+            first()
         if one:
             attributes = one.get_public_attributes()
             metadata = one.get_metadata()
@@ -38,11 +41,29 @@ def view_timer_by_id(request):
     return {'attributes': json.dumps(attributes), 'metadata': metadata}
 
 
-@view_config(route_name='get_timer_json', renderer='json')
-def get_timer_json(request):
-    one = DBSession.query(Timer).filter(Timer.id == request.matchdict['timerid']).first()
-    if one:
-        attributes = one.get_public_attributes()
+@view_config(route_name='edit_timer_json', renderer='json')
+def edit_timer_json(request):
+    #todo refactor
+    if request.matchdict['timerid']:
+
+        one = DBSession.query(Timer).filter(Timer.id == request.matchdict['timerid']).first()
+        if one:
+            # todo add auth for put
+            if request.method == 'PUT' and request.json_body['enddate']:
+                # todo json_body raises exception
+                one.enddate = request.json_body['enddate']
+
+            attributes = one.get_public_attributes()
+        else:
+            raise HTTPNotFound
+
+    elif request.method == 'POST':
+        # todo json_body validation
+        new = Timer(title=request.json_body['title'], enddate=request.json_body['enddate'], user={'id': 1})
+        DBSession.add(new)
+        DBSession.flush()
+        attributes = new.get_public_attributes()
+
     else:
         raise HTTPNotFound
 
@@ -54,4 +75,12 @@ def get_default_metadata():
         'title': 'Free OnLine Timer',
         'keywords': 'Free OnLine Timer',
         'description': 'Free OnLine Timer',
+    }
+
+def get_default_attributes():
+    return {
+        'title': 'Free OnLine Timer',
+        'h': '00',
+        'm': '00',
+        's': '00',
     }

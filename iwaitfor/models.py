@@ -29,7 +29,7 @@ class Timer(Base):
     name = Column(String(50), unique=True)
     title = Column(String(150))
     description = Column(Text)
-    end = Column(DateTime(timezone=True))
+    enddate = Column(DateTime(timezone=True))
     created = Column(DateTime(timezone=True))
     updated = Column(DateTime(timezone=True))
     user_id = Column(Integer)
@@ -37,11 +37,11 @@ class Timer(Base):
     is_public = Column(Boolean)
     view_count = Column(Integer)
 
-    def __init__(self, title, end, user, name='', description=''):
+    def __init__(self, title, enddate, user, name=None, description=''):
         self.name = name
         self.title = title
         self.description = description
-        self.end = end
+        self.enddate = enddate
         self.created = self.updated = datetime.now().isoformat()
         self.user_id = user['id']
         self.is_approved = True
@@ -52,10 +52,10 @@ class Timer(Base):
         return {'id': self.id,
                 'title': self.title,
                 'name': self.name,
-                'h': '',
-                'm': '',
-                's': '',
-                'date': str(self.end)}
+                'h': '00',
+                'm': '00',
+                's': '00',
+                'enddate': str(self.enddate)}
 
     def get_metadata(self):
         return {'title': self.title,

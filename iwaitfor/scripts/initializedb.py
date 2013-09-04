@@ -33,5 +33,8 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
-        model = Timer(title='one', name='one', end='2013-10-10', user={'id': 1})
+        model = Timer(title='one', name='one', enddate='2013-10-10', user={'id': 1})
+        model.is_approved = True
+        DBSession.add(model)
+        model = Timer(title='two', enddate='2013-10-20', user={'id': 1})
         DBSession.add(model)

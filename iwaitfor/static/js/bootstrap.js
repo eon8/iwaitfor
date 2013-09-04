@@ -5,7 +5,7 @@ requirejs.config({
       backbone: '../lib/backbone',
       underscore: '../lib/underscore',
       zepto: '../lib/zepto',
-      text: '../text',
+      text: '../lib/require.text',
       jst: '../../jst'
     },
     shim: {
