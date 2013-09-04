@@ -15,6 +15,9 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
     config = Configurator(settings=settings)
     config.add_static_view('static', 'static', cache_max_age=3600)
-    config.add_route('home', '/')
+    config.add_renderer('.html', 'pyramid.mako_templating.renderer_factory')
+    config.add_route('get_timer_json', '/q/timer/{timerid}')
+    config.add_route('view_timer_by_id', '/id/{timerid}')
+    config.add_route('view_timer_by_name', '/{timername:\w*}')
     config.scan()
     return config.make_wsgi_app()

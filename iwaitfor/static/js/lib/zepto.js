@@ -817,8 +817,8 @@ var Zepto = (function() {
   return $
 })()
 
-window.Zepto = Zepto
-'$' in window || (window.$ = Zepto)
+window.$ = window.Zepto = Zepto
+//'$' in window || (window.$ = Zepto)
 
 ;(function($){
   function detect(ua){

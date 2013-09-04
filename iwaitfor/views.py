@@ -1,35 +1,57 @@
-from pyramid.response import Response
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from pyramid.view import view_config
-
-from sqlalchemy.exc import DBAPIError
+import json
 
 from .models import (
     DBSession,
-    MyModel,
+    Timer,
     )
 
 
-@view_config(route_name='home', renderer='templates/mytemplate.pt')
-def my_view(request):
-    try:
-        one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    return {'one': one, 'project': 'iwaitfor'}
+@view_config(route_name='view_timer_by_name', renderer='iwaitfor:static/index.html')
+def view_timer_by_name(request):
+    attributes = {}
+    metadata = get_default_metadata()
+    if request.matchdict['timername']:
+        one = DBSession.query(Timer).filter(Timer.name == request.matchdict['timername']).first()
+        if one:
+            attributes = one.get_public_attributes()
+            metadata = one.get_metadata()
+        else:
+            raise HTTPNotFound
 
-conn_err_msg = """\
-Pyramid is having a problem using your SQL database.  The problem
-might be caused by one of the following things:
+    return {'attributes': json.dumps(attributes), 'metadata': metadata}
 
-1.  You may need to run the "initialize_iwaitfor_db" script
-    to initialize your database tables.  Check your virtual 
-    environment's "bin" directory for this script and try to run it.
 
-2.  Your database server may not be running.  Check that the
-    database server referred to by the "sqlalchemy.url" setting in
-    your "development.ini" file is running.
+@view_config(route_name='view_timer_by_id', renderer='iwaitfor:static/index.html')
+def view_timer_by_id(request):
+    one = DBSession.query(Timer).filter(Timer.id == request.matchdict['timerid']).first()
+    if one:
+        # todo is is_approved a good name?
+        if one.name and one.is_approved:
+            raise HTTPFound(location=request.route_url('view_timer_by_name', timername=one.name))
+        attributes = one.get_public_attributes()
+        metadata = one.get_metadata()
+    else:
+        raise HTTPNotFound
 
-After you fix the problem, please restart the Pyramid application to
-try it again.
-"""
+    return {'attributes': json.dumps(attributes), 'metadata': metadata}
 
+
+@view_config(route_name='get_timer_json', renderer='json')
+def get_timer_json(request):
+    one = DBSession.query(Timer).filter(Timer.id == request.matchdict['timerid']).first()
+    if one:
+        attributes = one.get_public_attributes()
+    else:
+        raise HTTPNotFound
+
+    return attributes
+
+
+def get_default_metadata():
+    return {
+        'title': 'Free OnLine Timer',
+        'keywords': 'Free OnLine Timer',
+        'description': 'Free OnLine Timer',
+    }

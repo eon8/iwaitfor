@@ -2,13 +2,13 @@ define(['backbone'], function(Backbone) {
     
   var CounterModel = Backbone.Model.extend({
      
-    urlRoot : '/z',
+    urlRoot : '/q/timer',
 
     timer_id: null,
 
     update: function() {
       var current = new Date(),
-          difference = this.get('date').getTime()
+          difference = new Date(this.get('date')).getTime()
           - current.getTime(),
           hours = 0,
           minutes = 0,
@@ -23,7 +23,7 @@ define(['backbone'], function(Backbone) {
       }
       
       this.set({
-        h: ('0' + hours).slice(-2),
+        h: hours,
         m: ('0' + minutes).slice(-2),
         s: ('0' + seconds).slice(-2)
       });

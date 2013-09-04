@@ -3,29 +3,33 @@
 <head>
 <meta charset="utf-8">
 
-<meta name="description" content="Free Web tutorials">
-<meta name="keywords" content="HTML,CSS,XML,JavaScript">
-<meta name="author" content="Ståle Refsnes">
+<meta name="description" content="${metadata['description']}">
+<meta name="keywords" content="${metadata['keywords']}">
+<meta name="author" content="Dmitriy Yermolenko">
 
-<title>Untitled Document</title>
+<title>${metadata['title']}</title>
 
-<script src="js/debug.js"></script>
-<script data-main="js/bootstrap" src="js/require.js"></script>
+<script src="static/js/debug.js"></script>
+<script data-main="static/js/bootstrap" src="static/js/require.js"></script>
 
 <!--script src="//vk.com/js/api/openapi.js?98"></script>
 <script>
   VK.init({apiId: 3782556, onlyWidgets: true});
 </script-->
 
-<link rel="stylesheet" href="reset.css">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="static/reset.css">
+<link rel="stylesheet" href="static/style.css">
 
 </head>
 
 <body>
   <article id="counter">
   </article>
-  
+
+  <script>
+    var counter_data = JSON.parse('${attributes|n}');
+  </script>
+
   <!--div id="vk_comments"></div>
   <script>
     VK.Widgets.Comments("vk_comments", {limit: 5, width: "400", attach: false});

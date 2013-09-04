@@ -56,11 +56,8 @@ define(['backbone', 'model/counter', 'text!jst/counter.jst'], function(Backbone,
   return {
 
     init: function() {
-
-      var Counter = new CounterModel({
-        title: 'new counter',
-        date: new Date(2013, 6, 23, 18, 00, 00)
-      });
+      
+      var Counter = new CounterModel(counter_data);
 
       // DOM ready
       $(function() {
