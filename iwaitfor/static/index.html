@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="utf-8">
 
 <meta name="description" content="${metadata['description']}">
@@ -21,18 +22,19 @@
 <link rel="stylesheet" href="/static/style.css">
 
 </head>
-
 <body>
-  <article id="timer">
-  </article>
 
-  <script>
+<article id="timer">
+</article>
+
+<script>
     var timer_data = JSON.parse('${attributes|n}');
-  </script>
+</script>
 
-  <!--div id="vk_comments"></div>
-  <script>
-    VK.Widgets.Comments("vk_comments", {limit: 5, width: "400", attach: false});
-  </script-->
+<!--div id="vk_comments"></div>
+<script>
+  VK.Widgets.Comments("vk_comments", {limit: 5, width: "400", attach: false});
+</script-->
+
 </body>
 </html>

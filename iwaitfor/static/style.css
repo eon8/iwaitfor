@@ -1,38 +1,35 @@
 html {
-  height: 100%;
+    height: 100%;
 }
+
 body {
-  height: 100%;
-  background-image: -webkit-linear-gradient(
-    bottom, white, #ccc
-  );
-  background-image: linear-gradient(
-    bottom, white, #ccc
-  );
+    height: 100%;
+    background-image: -webkit-linear-gradient(bottom, white, #ccc);
+    background-image: linear-gradient(bottom, white, #ccc);
 }
+
 #timer {
-  padding-top: 200px;
-  text-align: center;
-  background-image: -webkit-linear-gradient(
-    top, white, #ccc
-  );
-  background-image: linear-gradient(
-    top, white, #ccc
-  );
+    padding-top: 200px;
+    text-align: center;
+    background-image: -webkit-linear-gradient(top, white, #ccc);
+    background-image: linear-gradient(top, white, #ccc);
 }
+
 #timer header {
-  font: 36px/72px Arial, sans-serif;
-  color: #777;
+    font: 36px/72px Arial, sans-serif;
+    color: #777;
 }
+
 #timer section {
-  font: 48px Arial, sans-serif;
+    font: 48px Arial, sans-serif;
 }
+
 #timer section input {
-  width: 58px;
-  height: 54px;
-  font: 48px Arial, sans-serif;
+    width: 58px;
+    height: 54px;
+    font: 48px Arial, sans-serif;
 }
 
 .hidden {
-  display: none;
+    display: none;
 }

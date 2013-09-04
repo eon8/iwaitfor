@@ -13,9 +13,9 @@ def view_timer_by_name(request):
     attributes = get_default_attributes()
     metadata = get_default_metadata()
     if request.matchdict['timername']:
-        one = DBSession.query(Timer).\
-            filter(Timer.name == request.matchdict['timername']).\
-            filter(Timer.is_approved == True).\
+        one = DBSession.query(Timer). \
+            filter(Timer.name == request.matchdict['timername']). \
+            filter(Timer.is_approved == True). \
             first()
         if one:
             attributes = one.get_public_attributes()
@@ -76,6 +76,7 @@ def get_default_metadata():
         'keywords': 'Free OnLine Timer',
         'description': 'Free OnLine Timer',
     }
+
 
 def get_default_attributes():
     return {
