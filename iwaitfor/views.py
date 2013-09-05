@@ -2,9 +2,19 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPFound, HTTPBadRequest
 from pyramid.view import view_config
 import json
 
+from pyramid.security import (
+    remember,
+    forget,
+    authenticated_userid,
+    )
+
 from .models import (
     DBSession,
     Timer,
+    )
+
+from .security import (
+    USERS,
     )
 
 
@@ -65,7 +75,7 @@ def edit_timer_json(request):
         attributes = new.get_public_attributes()
 
     else:
-        raise HTTPNotFound
+        raise HTTPBadRequest
 
     return attributes
 
@@ -85,3 +95,33 @@ def get_default_attributes():
         'm': '00',
         's': '00',
     }
+
+
+@view_config(route_name='login', renderer='json')
+def login(request):
+    if request.method == 'POST' and 'login' in request.params:
+        login = request.params['login']
+        #password = request.params['password']
+        user = USERS(login)
+        if user:
+            headers = remember(request, login)
+            request.response.headerlist.extend(headers)
+            successful = True
+            message = 'Success login'
+        else:
+            successful = False
+            message = 'Failed login'
+    else:
+        raise HTTPBadRequest
+
+    return dict(
+        successful=successful,
+        message=message
+    )
+
+
+@view_config(route_name='logout', renderer='json')
+def logout(request):
+    headers = forget(request)
+    request.response.headerlist.extend(headers)
+    return {}
