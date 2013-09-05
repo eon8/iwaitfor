@@ -2,7 +2,7 @@ define(['backbone'], function (Backbone) {
 
     var TimerModel = Backbone.Model.extend({
 
-        urlRoot: '/q/timer/',
+        urlRoot: '/q/timer',
 
         interval_id: null,
 
@@ -56,6 +56,8 @@ define(['backbone'], function (Backbone) {
                 date.setMinutes(date.getMinutes() + parseInt(m));
                 date.setSeconds(date.getSeconds() + parseInt(s));
                 this.save({enddate: date}, {wait: true});
+                // TODO если не проходит валидация нужно запустить счетчик по старому
+                // TODO если счетчик по нолям ил меньше минимума - не сохранять
             }
         }
 

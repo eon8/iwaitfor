@@ -36,6 +36,7 @@ def main(argv=sys.argv):
     with transaction.manager:
         user = User(login='dmiyer@gmail.com')
         DBSession.add(user)
+        DBSession.flush()
         model = Timer(title='one', name='one', enddate='2013-10-10', user=user)
         model.is_approved = True
         DBSession.add(model)

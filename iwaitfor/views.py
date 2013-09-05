@@ -16,9 +16,9 @@ from .models import (
 from .security import (
     USERS,
     )
+#TODO edit 403 failed permission check message
 
-
-@view_config(route_name='view_timer_by_name', renderer='iwaitfor:static/index.html')
+@view_config(route_name='view_timer_by_name', renderer='iwaitfor:static/index.html', permission='view')
 def view_timer_by_name(request):
     attributes = get_default_attributes()
     metadata = get_default_metadata()
@@ -36,7 +36,7 @@ def view_timer_by_name(request):
     return {'attributes': json.dumps(attributes), 'metadata': metadata}
 
 
-@view_config(route_name='view_timer_by_id', renderer='iwaitfor:static/index.html')
+@view_config(route_name='view_timer_by_id', renderer='iwaitfor:static/index.html', permission='view')
 def view_timer_by_id(request):
     one = DBSession.query(Timer).filter(Timer.id == request.matchdict['timerid']).first()
     if one:
@@ -51,31 +51,30 @@ def view_timer_by_id(request):
     return {'attributes': json.dumps(attributes), 'metadata': metadata}
 
 
-@view_config(route_name='edit_timer_json', renderer='json')
-def edit_timer_json(request):
-    #todo refactor
-    if request.matchdict['timerid']:
-
-        one = DBSession.query(Timer).filter(Timer.id == request.matchdict['timerid']).first()
-        if one:
-            # todo add auth for put
-            if request.method == 'PUT' and request.json_body['enddate']:
-                # todo json_body raises exception
-                one.enddate = request.json_body['enddate']
-
-            attributes = one.get_public_attributes()
-        else:
-            raise HTTPNotFound
-
-    elif request.method == 'POST':
+@view_config(route_name='add_timer_json', renderer='json', permission='add')
+def add_timer_json(request):
+    if request.method == 'POST':
         # todo json_body validation
-        new = Timer(title=request.json_body['title'], enddate=request.json_body['enddate'], user={'id': 1})
+        user = USERS(authenticated_userid(request))
+        new = Timer(title=request.json_body['title'], enddate=request.json_body['enddate'], user=user)
         DBSession.add(new)
         DBSession.flush()
         attributes = new.get_public_attributes()
 
     else:
         raise HTTPBadRequest
+
+    return attributes
+
+
+@view_config(route_name='edit_timer_json', renderer='json', permission='edit')
+def edit_timer_json(request):
+    timer = request.context
+    if request.method == 'PUT' and request.json_body['enddate']:
+        # todo json_body raises exception
+        timer.enddate = request.json_body['enddate']
+
+    attributes = timer.get_public_attributes()
 
     return attributes
 
@@ -116,7 +115,8 @@ def login(request):
 
     return dict(
         successful=successful,
-        message=message
+        message=message,
+        login=authenticated_userid(request)
     )
 
 
@@ -125,3 +125,23 @@ def logout(request):
     headers = forget(request)
     request.response.headerlist.extend(headers)
     return {}
+
+
+    # def validate_page(title, body):
+    #     errors = []
+    #
+    #     title = title.strip()
+    #     if not title:
+    #         errors.append('Title may not be empty')
+    #     elif len(title) > 32:
+    #         errors.append('Title may not be longer than 32 characters')
+    #
+    #     body = body.strip()
+    #     if not body:
+    #         errors.append('Body may not be empty')
+    #
+    #     return {
+    #         'title': title,
+    #         'body': body,
+    #         'errors': errors,
+    #     }
