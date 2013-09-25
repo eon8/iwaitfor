@@ -14,8 +14,7 @@ requires = [
     'pyramid_debugtoolbar',
     'zope.sqlalchemy',
     'waitress',
-    'requests',
-    'pydev'
+    'requests'
     ]
 
 setup(name='iwaitfor',
