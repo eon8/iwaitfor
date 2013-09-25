@@ -10,7 +10,10 @@
 
 <title>${metadata['title']}</title>
 
-<script src="/static/js/debug.js"></script>
+<!--<script src="/static/js/debug.js"></script>-->
+<script>
+    var timer_data = JSON.parse('${attributes|n}');
+</script>
 <script data-main="/static/js/bootstrap" src="/static/js/lib/require.js"></script>
 
 <!--script src="//vk.com/js/api/openapi.js?98"></script>
@@ -27,9 +30,8 @@
 <article id="timer">
 </article>
 
-<script>
-    var timer_data = JSON.parse('${attributes|n}');
-</script>
+<article id="auth">
+</article>
 
 <!--div id="vk_comments"></div>
 <script>

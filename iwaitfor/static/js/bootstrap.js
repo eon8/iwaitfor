@@ -5,6 +5,8 @@ requirejs.config({
         backbone: '../lib/backbone',
         underscore: '../lib/underscore',
         zepto: '../lib/zepto',
+        cookie: '../lib/zepto.cookie',
+        getscript: '../lib/zepto.getscript',
         text: '../lib/require.text',
         jst: '../../jst'
     },
@@ -18,11 +20,17 @@ requirejs.config({
         },
         'zepto': {
             exports: '$'
+        },
+        'cookie': {
+            deps: ['zepto']
+        },
+        'getscript': {
+            deps: ['zepto']
         }
     }
 });
 
-require(['app'], function (App) {
+require(['app', 'cookie', 'getscript'], function (App) {
 
     App.init();
 

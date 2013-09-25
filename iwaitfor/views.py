@@ -1,6 +1,6 @@
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound, HTTPBadRequest
 from pyramid.view import view_config
-import json
+import json, requests
 
 from pyramid.security import (
     remember,
@@ -11,6 +11,7 @@ from pyramid.security import (
 from .models import (
     DBSession,
     Timer,
+    User
     )
 
 from .security import (
@@ -60,6 +61,7 @@ def add_timer_json(request):
         DBSession.add(new)
         DBSession.flush()
         attributes = new.get_public_attributes()
+        # TODO after adding of a new timer make a redirect or use backbone client side router for new url
 
     else:
         raise HTTPBadRequest
@@ -98,25 +100,39 @@ def get_default_attributes():
 
 @view_config(route_name='login', renderer='json')
 def login(request):
-    if request.method == 'POST' and 'login' in request.params:
-        login = request.params['login']
-        #password = request.params['password']
-        user = USERS(login)
-        if user:
-            headers = remember(request, login)
-            request.response.headerlist.extend(headers)
-            successful = True
-            message = 'Success login'
+
+    # import sys
+    # sys.path.append('/home/dave/dev/pycharm-2.7.3/pycharm-debug-py3k.egg')
+    # import pydevd
+    # pydevd.settrace('localhost', port=7777, stdoutToServer=True, stderrToServer=True)
+
+    if request.method == 'POST' and 'token' in request.params:
+        # TODO более гибко для разных провайдеров
+        if (request.matchdict['provider'] == 'google'):
+            r = requests.get('https://www.googleapis.com/oauth2/v2/tokeninfo?access_token=' + request.params['token'])
+            if (r.status_code == 200):
+                token_info = r.json()
+                if token_info['audience'] == '818705857064.apps.googleusercontent.com':
+                    user = USERS(token_info['email'])
+                    if not user:
+                        user = User(login=token_info['email'])
+                        DBSession.add(user)
+                    headers = remember(request, user.login)
+                    request.response.headerlist.extend(headers)
+                    successful = True
+                    message = 'Success login'
+                else:
+                   raise HTTPBadRequest
+            else:
+               raise HTTPBadRequest
         else:
-            successful = False
-            message = 'Failed login'
+            raise HTTPBadRequest
     else:
         raise HTTPBadRequest
 
     return dict(
         successful=successful,
-        message=message,
-        login=authenticated_userid(request)
+        message=message
     )
 
 

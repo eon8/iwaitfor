@@ -55,8 +55,7 @@ define(['backbone'], function (Backbone) {
                 date.setHours(date.getHours() + parseInt(h));
                 date.setMinutes(date.getMinutes() + parseInt(m));
                 date.setSeconds(date.getSeconds() + parseInt(s));
-                this.save({enddate: date}, {wait: true});
-                // TODO если не проходит валидация нужно запустить счетчик по старому
+                this.set({enddate: date});
                 // TODO если счетчик по нолям ил меньше минимума - не сохранять
             }
         }

@@ -1,59 +1,11 @@
 // App
 
-define(['backbone', 'model/timer', 'text!jst/timer.jst'], function (Backbone, TimerModel, html) {
-
-    var AppView = Backbone.View.extend({
-
-        template: _.template(html),
-
-        initialize: function () {
-            this.listenTo(this.model, 'change', this.render);
-        },
-
-        events: {
-            'click #numbers': 'edit',
-            'click #numbersEdit': 'editclick',
-            'click #save': 'save'
-        },
-
-        edit: function (e) {
-            e.stopPropagation();
-            this.model.stop();
-            this.$('#numbers').addClass('hidden');
-            this.$('#numbersEdit').removeClass('hidden');
-
-            $(document).one('click', this.set.bind(this));
-        },
-
-        editclick: function (e) {
-            e.stopPropagation();
-        },
-
-        set: function (e) {
-            this.model.edit(
-                this.$('#numbersEdit [name=hours]').val(),
-                this.$('#numbersEdit [name=minutes]').val(),
-                this.$('#numbersEdit [name=seconds]').val()
-            );
-            this.model.once('change', this.model.start);
-
-            this.$('#numbersEdit').addClass('hidden');
-            this.$('#numbers').removeClass('hidden');
-        },
-
-        save: function () {
-            this.model.save();
-        },
-
-        render: function () {
-            this.$el.html(this.template(this.model.attributes));
-            return this;
-        }
-
-    });
+define(['backbone', 'model/timer', 'view/timer', 'view/auth'], function (Backbone, TimerModel, TimerView, AuthView) {
 
     // App object
     return {
+
+        logged_in: false,
 
         init: function () {
 
@@ -62,7 +14,7 @@ define(['backbone', 'model/timer', 'text!jst/timer.jst'], function (Backbone, Ti
             // DOM ready
             $(function () {
 
-                var app_view = new AppView({
+                var timer_view = new TimerView({
 
                     model: Timer,
                     el: $('#timer')
@@ -73,8 +25,27 @@ define(['backbone', 'model/timer', 'text!jst/timer.jst'], function (Backbone, Ti
                     Timer.start();
                 }
 
-            });
+                this.processAuth(); // checkAuth ??
 
+            }.bind(this));
+
+        },
+
+        processAuth: function () {
+            var auth_view = new AuthView({el: $('#auth')});
+            if ($.cookie('auth_tkt')) {
+                this.logged_in = auth_view.logged_in = true;
+                auth_view.render();
+            } else {
+                auth_view.askAPIs(function (result) {
+                    this.logged_in = auth_view.logged_in = result;
+                    if (!this.logged_in) {
+                        auth_view.render();
+                    } else {
+                        auth_view.renewAuthTkt();
+                    }
+                }.bind(this));
+            }
         }
 
     }

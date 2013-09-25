@@ -28,9 +28,11 @@ def main(global_config, **settings):
     config.add_renderer('.html', 'pyramid.mako_templating.renderer_factory')
     config.add_route('add_timer_json', '/q/timer', factory=TimerFactory)
     config.add_route('edit_timer_json', '/q/timer/{timerid:\d+}', factory=TimerFactory, traverse='/{timerid}')
-    config.add_route('login', '/q/login')
+    config.add_route('login', '/q/login/{provider}')
     config.add_route('logout', '/q/logout')
-    config.add_route('view_timer_by_id', '/id/{timerid}')
-    config.add_route('view_timer_by_name', '/{timername:\w*}')
+    config.add_route('view_timer_by_id', '/id/{timerid:\d+}')
+    config.add_route('view_timer_by_name', '/{timername:\w*}') # TODO check pattern, add '-'
     config.scan()
     return config.make_wsgi_app()
+
+# TODO move to https?
