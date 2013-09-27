@@ -33,19 +33,14 @@ define(['backbone', 'model/timer', 'view/timer', 'view/auth'], function (Backbon
 
         processAuth: function () {
             var auth_view = new AuthView({el: $('#auth')});
-            if ($.cookie('auth_tkt')) {
-                this.logged_in = auth_view.logged_in = true;
-                auth_view.render();
-            } else {
-                auth_view.askAPIs(function (result) {
-                    this.logged_in = auth_view.logged_in = result;
-                    if (!this.logged_in) {
-                        auth_view.render();
-                    } else {
-                        auth_view.renewAuthTkt();
-                    }
-                }.bind(this));
-            }
+            auth_view.askAPIs(function (result) {
+                this.logged_in = auth_view.logged_in = result;
+                if (!this.logged_in) {
+                    auth_view.render();
+                } else {
+                    auth_view.renewAuthTkt();
+                }
+            }.bind(this));
         }
 
     }

@@ -5,9 +5,8 @@ define(['backbone', 'text!jst/auth.jst', 'auth/google'], function (Backbone, htm
         template: _.template(html),
 
         events: {
-            'click #login': 'login',
-            'click #logout': 'logout',
-            'click #authorize-button': 'googleLogin'
+            'click #authorize-button': 'googleLogin',
+            'click #logout': 'googleLogout'
         },
 
         auth_apis: {},
@@ -17,8 +16,7 @@ define(['backbone', 'text!jst/auth.jst', 'auth/google'], function (Backbone, htm
         logged_in: false,
 
         initialize: function () {
-            // TODO GoogleAuth не полноценный объект, его нельзя создать через new
-            this.auth_apis.google = GoogleAuth;
+            this.auth_apis.google = new GoogleAuth;
         },
 
         askAPIs: function (callback) {
@@ -32,7 +30,7 @@ define(['backbone', 'text!jst/auth.jst', 'auth/google'], function (Backbone, htm
                 }
             }.bind(this);
             _.each(this.auth_apis, function (api) {
-                api.on('checked', checked_handler);
+                api.once('checked', checked_handler);
                 api.check();
             });
         },
@@ -40,20 +38,32 @@ define(['backbone', 'text!jst/auth.jst', 'auth/google'], function (Backbone, htm
         renewAuthTkt: function () {
             _.each(this.auth_apis, function (api, api_name) {
                 if (api.logged_in) {
-                    api.getUserData(function (user_data) {
-                        this.login(api_name, api.getAccessToken(), user_data);
-                    }.bind(this));
+                    if ($.cookie('auth_tkt')) {
+                        this.logged_in = true;
+                        this.render();
+                    } else {
+                        api.getUserData(function (user_data) {
+                            this.login(api_name, api.getAccessToken(), user_data);
+                        }.bind(this));
+                    }
                 }
             }.bind(this));
         },
 
         googleLogin: function() {
-            this.auth_apis.google.on('checked', function(result){
+            this.auth_apis.google.once('checked', function(result){
                 if (result) {
                     this.renewAuthTkt();
                 }
             }.bind(this));
             this.auth_apis.google.handleAuthClick();
+        },
+
+        googleLogout: function() {
+            this.auth_apis.google.once('unchecked', function(){
+                this.logout();
+            }.bind(this));
+            this.auth_apis.google.handleUnAuthClick();
         },
 
         login: function (provider, access_token, user_data) {
@@ -82,11 +92,3 @@ define(['backbone', 'text!jst/auth.jst', 'auth/google'], function (Backbone, htm
     return AuthView;
 
 });
-
-/*
-    TODO замечания
-    если нажать выход - выходит только из приложения, в сервисах гугл остаемся авторизованными,
-    надо или выходить полностью, или при обновлении страницы не делать автоматическую авторизацию
-
-    при выходе сразу надо загружать сервисы гугл перед следующим действием, но исключить повторную их загрузку
-*/
