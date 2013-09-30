@@ -25,7 +25,7 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-time.jst', 'model/user
             if (User.canEdit(this.model)) {
                 this.is_edit = true;
 
-                var el = $(e.target);
+                var el = $(e.currentTarget);
                 el.addClass('hide');
                 el.parent().find('.data-edit').removeClass('hide');
 
@@ -84,11 +84,7 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-time.jst', 'model/user
             if (!this.$('#timer-time').length) {
                 this.render();
             } else {
-                this.$('#timer-time').html(this.time_template({
-                    h: this.model.hours,
-                    m: this.model.minutes,
-                    s: this.model.seconds
-                }));
+                this.$('#timer-time').html(this.time_template(this.model.datetime));
             }
             return this;
         }

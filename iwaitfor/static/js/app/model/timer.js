@@ -6,9 +6,14 @@ define(['backbone'], function (Backbone) {
 
         interval_id: null,
 
-        hours: -1,
-        minutes: -1,
-        seconds: -1,
+        datetime: {
+            years: -1,
+            months: -1,
+            days: -1,
+            hours: -1,
+            minutes: -1,
+            seconds: -1
+        },
 
         is_dirty: false,
 
@@ -16,31 +21,78 @@ define(['backbone'], function (Backbone) {
             enddate: new Date()
         },
 
-        update: function () {
-            // TODO сделать чтоб в enddate всегда был обект, или метод для его получения, и везде поубирать такое
-            var difference = (this.get('enddate') ? new Date(this.get('enddate')).getTime() : 0)
-                    - new Date().getTime(),
-                hours = 0,
-                minutes = 0,
-                seconds = 0;
+        initialize: function (attributes) {
+            if (attributes.enddate) {
+                this.set('enddate', new Date(attributes.enddate));
+            }
+        },
 
-            if (difference > 0) {
-                hours = Math.floor(difference / 1000 / 60 / 60);
-                minutes = Math.floor((difference - hours * 60 * 60 * 1000) / 1000 / 60);
-                seconds = Math.floor((difference - hours * 60 * 60 * 1000 - minutes * 60 * 1000) / 1000);
+        update: function () {
+            var enddate = this.get('enddate'),
+                nowdate = new Date(),
+                datetime = {
+                    years: 0,
+                    months: 0,
+                    days: 0,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0
+                };
+
+            if (enddate > nowdate) {
+                datetime.years = enddate.getFullYear() - nowdate.getFullYear();
+                datetime.months = enddate.getMonth() - nowdate.getMonth();
+                datetime.days = enddate.getDate() - nowdate.getDate();
+                datetime.hours = enddate.getHours() - nowdate.getHours();
+                datetime.minutes = enddate.getMinutes() - nowdate.getMinutes();
+                datetime.seconds = enddate.getSeconds() - nowdate.getSeconds();
+
+                if (datetime.seconds < 0) {
+                    datetime.minutes--;
+                    datetime.seconds += 60;
+                }
+
+                if (datetime.minutes < 0) {
+                    datetime.hours--;
+                    datetime.minutes += 60;
+                }
+
+                if (datetime.hours < 0) {
+                    datetime.days--;
+                    datetime.hours += 24;
+                }
+
+                if (datetime.days < 0) {
+                    datetime.months--;
+
+                    var year = enddate.getFullYear(),
+                        months = [
+                            31, (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) ? 29 : 28,
+                            31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+                        ],
+                        month = enddate.getMonth() - 1;
+                    if (month < 0) {
+                        month += 12;
+                    }
+
+                    datetime.days += months[month];
+                }
+
+                if (datetime.months < 0) {
+                    datetime.years--;
+                    datetime.months += 12;
+                }
+
             } else {
                 this.stop();
             }
 
-            var old_hours = this.hours,
-                old_minutes = this.minutes,
-                old_seconds = this.seconds;
+            datetime.hours = (datetime.hours < 10 ? '0' : '') + datetime.hours;
+            datetime.minutes = ('0' + datetime.minutes).slice(-2);
+            datetime.seconds = ('0' + datetime.seconds).slice(-2);
 
-            this.hours = (hours < 10 ? '0' : '') + hours;
-            this.minutes = ('0' + minutes).slice(-2);
-            this.seconds = ('0' + seconds).slice(-2);
-
-            if (old_hours != this.hours || old_minutes != this.minutes || old_seconds != this.seconds) {
+            if (!_.isEqual(this.datetime, datetime)) {
+                this.datetime = datetime;
                 this.trigger('update');
             }
         },
@@ -63,9 +115,12 @@ define(['backbone'], function (Backbone) {
                     title: data[0].value,
                     description: data[1].value
                 },
-                hours = data[4].value,
-                minutes = data[5].value,
-                seconds = data[6].value;
+                years = data[4].value,
+                months = data[5].value,
+                days = data[6].value,
+                hours = data[7].value,
+                minutes = data[8].value,
+                seconds = data[9].value;
 
             if (!this.interval_id
                 && parseInt(hours) == hours

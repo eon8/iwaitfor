@@ -26,6 +26,11 @@ body {
     text-align: center;
 }
 
-.timer input.time {
+#timer-time em {
+    color: gray;
+    margin-right: 10px;
+}
+
+#timer-time input {
     width: 1.3em;
 }
