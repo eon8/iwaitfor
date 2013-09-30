@@ -8,7 +8,11 @@ requirejs.config({
         cookie: '../lib/zepto.cookie',
         getscript: '../lib/zepto.getscript',
         text: '../lib/require.text',
-        jst: '../../jst'
+        jst: '../../jst',
+
+        modernizr: '../lib/modernizr',
+        foundation: '../lib/foundation/foundation',
+        datepicker: '../lib/foundation/foundation-datepicker'
     },
     shim: {
         'backbone': {
@@ -26,11 +30,17 @@ requirejs.config({
         },
         'getscript': {
             deps: ['zepto']
+        },
+        foundation: {
+            deps: ['modernizr', 'zepto']
+        },
+        datepicker: {
+            deps: ['foundation']
         }
     }
 });
 
-require(['app', 'cookie', 'getscript'], function (App) {
+require(['app', 'cookie', 'getscript', 'foundation', 'datepicker'], function (App) {
 
     App.init();
 
@@ -38,10 +48,8 @@ require(['app', 'cookie', 'getscript'], function (App) {
 
 /*
 
- - сохранение после авторизации через соцсеть
  - ссылки короче 10 символов требуют премодерацию
- до модерации будет предоставлена длинная ссылка
- с последующим 301 редиректом
+ с последующим 301 редиректом с ссылки на id/:id
  - после одобрения изменение премиум-таймера так же требует премодерацию
  - можно оставить жалобу с аргументацией неправильного времени
  - отсеивание из этого всего спама

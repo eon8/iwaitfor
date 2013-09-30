@@ -1,8 +1,30 @@
-<header><%= title %></header>
-<section id="numbers"><%= h %>:<%= m %>:<%= s %></section>
-<section id="numbersEdit" class="hidden">
-    <input name="hours" value="<%= h %>">:<input name="minutes" value="<%= m %>">:<input name="seconds"
-                                                                                         value="<%= s %>">
-    <!-- TODO forms for submission by enter key -->
-</section>
-<button id="save">Сохранить</button>
+<form method="post">
+    <h1>
+        <span class="data-view">
+            <%= title %>
+        </span>
+        <span class="data-edit hide">
+            <input name="title" value="<%= title %>">
+        </span>
+    </h1>
+    <p>
+        <span class="data-view">
+            <%= description %>
+        </span>
+        <span class="data-edit hide">
+            <input name="description" value="<%= description %>">
+        </span>
+    </p>
+    <p>
+        <input name="date" value="<%= new Date(enddate).getMonth() + 1 + '/' + new Date(enddate).getDate() + '/' + new Date(enddate).getFullYear() %>">
+        <input name="time" value="<%= new Date(enddate).getHours() + ':' + new Date(enddate).getMinutes() %>">
+        <!-- TODO mobile native -->
+    </p>
+    <h2>
+        <div id="timer-time"></div>
+    </h2>
+    <% if (show_save) { %>
+      <input type="submit" class="large success button" value="Save">
+    <% } %>
+</form>
+<hr />

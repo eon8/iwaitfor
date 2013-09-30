@@ -8,8 +8,6 @@ define(['backbone'], function (Backbone) {
         GoogleAuth.prototype,
         {
 
-            logged_in: false,
-
             client_id: '818705857064',
 
             scope: [
@@ -18,16 +16,12 @@ define(['backbone'], function (Backbone) {
             ],
 
             initialize: function () {
-                $.getScript('https://apis.google.com/js/client.js');
+                $.getScript('https://apis.google.com/js/client.js', this.check.bind(this));
             },
 
             check: function () {
-                this.handleClientLoad();
-            },
-
-            handleClientLoad: function () {
                 if (!window.gapi || !gapi.auth) {
-                    setTimeout(this.handleClientLoad.bind(this), 10);
+                    setTimeout(this.check.bind(this), 10);
                     return;
                 }
                 // TODO https://developers.google.com/+/web/api/javascript WARNING
@@ -36,9 +30,8 @@ define(['backbone'], function (Backbone) {
 
             handleAuthResult: function (authResult) {
                 if (authResult && !authResult.error) {
-                    this.logged_in = true;
+                    this.trigger('logged_in');
                 }
-                this.trigger('checked', this.logged_in);
             },
 
             handleAuthClick: function () {
@@ -53,7 +46,7 @@ define(['backbone'], function (Backbone) {
                     contentType: "application/json",
                     dataType: 'jsonp',
                     success: function() {
-                        this.trigger('unchecked');
+                        this.trigger('logged_out');
                     }.bind(this),
                     error: function() {
                         window.location = 'https://plus.google.com/apps';

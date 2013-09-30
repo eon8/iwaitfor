@@ -57,11 +57,13 @@ def add_timer_json(request):
     if request.method == 'POST':
         # todo json_body validation
         user = USERS(authenticated_userid(request))
-        new = Timer(title=request.json_body['title'], enddate=request.json_body['enddate'], user=user)
+        new = Timer(title=request.json_body['title'],
+                    description=request.json_body['description'],
+                    enddate=request.json_body['enddate'],
+                    user=user)
         DBSession.add(new)
         DBSession.flush()
-        attributes = new.get_public_attributes()
-        # TODO after adding of a new timer make a redirect or use backbone client side router for new url
+        attributes = {'id': new.id}
 
     else:
         raise HTTPBadRequest
@@ -74,11 +76,11 @@ def edit_timer_json(request):
     timer = request.context
     if request.method == 'PUT' and request.json_body['enddate']:
         # todo json_body raises exception
+        timer.title = request.json_body['title']
+        timer.description = request.json_body['description']
         timer.enddate = request.json_body['enddate']
 
-    attributes = timer.get_public_attributes()
-
-    return attributes
+    return {'id': timer.id}
 
 
 def get_default_metadata():
@@ -88,13 +90,11 @@ def get_default_metadata():
         'description': 'Free OnLine Timer',
     }
 
-
+# TODO to user model as static method
 def get_default_attributes():
     return {
         'title': 'Free OnLine Timer',
-        'h': '00',
-        'm': '00',
-        's': '00',
+        'description': 'new timer'
     }
 
 
@@ -115,12 +115,14 @@ def login(request):
                 if token_info['audience'] == '818705857064.apps.googleusercontent.com':
                     user = USERS(token_info['email'])
                     if not user:
-                        user = User(login=token_info['email'])
+                        user = User(login=token_info['email'], name=request.params['displayName'])
                         DBSession.add(user)
                     headers = remember(request, user.login)
                     request.response.headerlist.extend(headers)
                     successful = True
                     message = 'Success login'
+                    user_name = user.name
+                    timer_ids = [timer.id for timer in user.timers]
                 else:
                    raise HTTPBadRequest
             else:
@@ -132,7 +134,9 @@ def login(request):
 
     return dict(
         successful=successful,
-        message=message
+        message=message,
+        user_name=user_name,
+        timer_ids=timer_ids
     )
 
 

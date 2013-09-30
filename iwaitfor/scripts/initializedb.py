@@ -34,12 +34,12 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-    with transaction.manager:
-        user = User(login='dmiyer@gmail.com')
-        DBSession.add(user)
-        DBSession.flush()
-        model = Timer(title='one', name='one', enddate='2013-10-10', user=user)
-        model.is_approved = True
-        DBSession.add(model)
-        model = Timer(title='two', enddate='2013-10-20', user=user)
-        DBSession.add(model)
+    # with transaction.manager:
+    #     user = User(login='dmiyer@gmail.com')
+    #     DBSession.add(user)
+    #     DBSession.flush()
+    #     model = Timer(title='one', name='one', enddate='2013-10-10', user=user)
+    #     model.is_approved = True
+    #     DBSession.add(model)
+    #     model = Timer(title='two', enddate='2013-10-20', user=user)
+    #     DBSession.add(model)

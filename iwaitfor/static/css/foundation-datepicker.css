@@ -1,10 +1,8 @@
-/*
-.datepicker {
-  .prev, .next {font-style:normal;}
-  .prev:after {content:"«";}
-  .next:after {content:"»";}
-}
-*/
+
+.datepicker .prev, .next {font-style:normal}
+.datepicker .prev:after {content:"«"}
+.datepicker .next:after {content:"»"}
+
 /*!
  * Datepicker for Foundation - less stylesheet, just version customized to foundation
  *

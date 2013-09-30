@@ -1,11 +1,10 @@
 // App
 
-define(['backbone', 'model/timer', 'view/timer', 'view/auth'], function (Backbone, TimerModel, TimerView, AuthView) {
+define(['backbone', 'model/timer', 'view/timer', 'model/user', 'view/user', 'view/logo'], function (Backbone, TimerModel, TimerView, User, UserView, LogoView) {
 
     // App object
+    // TODO initialize
     return {
-
-        logged_in: false,
 
         init: function () {
 
@@ -14,33 +13,22 @@ define(['backbone', 'model/timer', 'view/timer', 'view/auth'], function (Backbon
             // DOM ready
             $(function () {
 
+                $(document).foundation();
+
                 var timer_view = new TimerView({
 
                     model: Timer,
                     el: $('#timer')
 
-                }).render();
+                });
 
-                if (Timer.get('id')) {
-                    Timer.start();
-                }
+                Timer.start();
 
-                this.processAuth(); // checkAuth ??
+                var logo_view = new LogoView({el: $('#logo')}).render();
+                var user_view = new UserView({el: $('#user')}).render();
 
             }.bind(this));
 
-        },
-
-        processAuth: function () {
-            var auth_view = new AuthView({el: $('#auth')});
-            auth_view.askAPIs(function (result) {
-                this.logged_in = auth_view.logged_in = result;
-                if (!this.logged_in) {
-                    auth_view.render();
-                } else {
-                    auth_view.renewAuthTkt();
-                }
-            }.bind(this));
         }
 
     }

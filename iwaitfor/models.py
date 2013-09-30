@@ -88,11 +88,9 @@ class Timer(Base):
 
     def get_public_attributes(self):
         return {'id': self.id,
-                'title': self.title,
                 'name': self.name,
-                'h': '00',
-                'm': '00',
-                's': '00',
+                'title': self.title,
+                'description': self.description,
                 'enddate': str(self.enddate)}
 
     def get_metadata(self):
@@ -106,10 +104,12 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     login = Column(String(50), unique=True)
+    name = Column(String(250))
     timers = relationship(Timer, backref="user")
 
-    def __init__(self, login):
+    def __init__(self, login, name=''):
         self.login = login
+        self.name = name
 
     def check_password(self, passwd):
         return self.password == passwd

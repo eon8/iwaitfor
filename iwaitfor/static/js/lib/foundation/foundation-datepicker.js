@@ -68,8 +68,7 @@
 		this.picker = $(DPGlobal.template)
 							.appendTo(this.isInline ? this.element : 'body')
 							.on({
-								click: $.proxy(this.click, this),
-								mousedown: $.proxy(this.mousedown, this)
+								click: $.proxy(this.click, this)
 							});
 		if (this.closeButton){
 			this.picker.find('a.datepicker-close').show();
