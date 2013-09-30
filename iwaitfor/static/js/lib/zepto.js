@@ -817,7 +817,7 @@ var Zepto = (function() {
   return $
 })()
 
-window.Zepto = Zepto
+window.$ = window.Zepto = Zepto
 '$' in window || (window.$ = Zepto)
 
 ;(function($){

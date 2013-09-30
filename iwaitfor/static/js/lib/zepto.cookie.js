@@ -43,7 +43,7 @@
 
             decode = options.raw ? function (s) { return s } : decodeURIComponent
 
-            return (result = new RegExp('(?:^|; )' + encodeURIComponent(key) + '=([^;]*)').exec(document.cookie)) ? decode(result[1]) : null
+            return (result = new RegExp('(?:^|; )' + encodeURIComponent(key) + '=([^;]*)').exec(document.cookie)) ? decode(result[1].replace(/^"(.*)"$/, '$1')) : null
         }
 
     })
