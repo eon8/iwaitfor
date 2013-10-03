@@ -1,6 +1,5 @@
 @import url("normalize.css");
 @import url("foundation.css");
-@import url("foundation-datepicker.css");
 
 html {
     height: 100%;
@@ -26,11 +25,26 @@ body {
     text-align: center;
 }
 
-#timer-time em {
-    color: gray;
-    margin-right: 10px;
+.timer-date input {
+    /*width: 5.2em;*/
 }
 
-#timer-time input {
+.timer-time input {
+    /*width: 2.6em;*/
+}
+
+#timer-countdown strong {
+    display: inline-block;
     width: 1.3em;
+}
+
+
+#timer-countdown em {
+    color: gray;
+    margin-right: .5em
+}
+
+#timer-countdown input {
+    display: inline;
+    width: 3em;
 }

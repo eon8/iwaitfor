@@ -91,7 +91,8 @@ class Timer(Base):
                 'name': self.name,
                 'title': self.title,
                 'description': self.description,
-                'enddate': str(self.enddate)}
+                'enddate': str(self.enddate),
+                'is_public': self.is_public}
 
     def get_metadata(self):
         return {'title': self.title,

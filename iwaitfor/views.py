@@ -58,8 +58,10 @@ def add_timer_json(request):
         # todo json_body validation
         user = USERS(authenticated_userid(request))
         new = Timer(title=request.json_body['title'],
+                    name=request.json_body['name'],
                     description=request.json_body['description'],
                     enddate=request.json_body['enddate'],
+                    is_public=request.json_body['is_public'],
                     user=user)
         DBSession.add(new)
         DBSession.flush()
@@ -77,8 +79,10 @@ def edit_timer_json(request):
     if request.method == 'PUT' and request.json_body['enddate']:
         # todo json_body raises exception
         timer.title = request.json_body['title']
+        timer.name = request.json_body['name']
         timer.description = request.json_body['description']
         timer.enddate = request.json_body['enddate']
+        timer.is_public = request.json_body['is_public']
 
     return {'id': timer.id}
 

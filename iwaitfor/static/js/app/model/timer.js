@@ -18,7 +18,10 @@ define(['backbone'], function (Backbone) {
         is_dirty: false,
 
         defaults: {
-            enddate: new Date()
+            enddate: new Date(),
+            name: '',
+            is_public: true, // TODO maybe string or int
+            view_count: 0
         },
 
         initialize: function (attributes) {
@@ -87,10 +90,6 @@ define(['backbone'], function (Backbone) {
                 this.stop();
             }
 
-            datetime.hours = (datetime.hours < 10 ? '0' : '') + datetime.hours;
-            datetime.minutes = ('0' + datetime.minutes).slice(-2);
-            datetime.seconds = ('0' + datetime.seconds).slice(-2);
-
             if (!_.isEqual(this.datetime, datetime)) {
                 this.datetime = datetime;
                 this.trigger('update');
@@ -110,31 +109,36 @@ define(['backbone'], function (Backbone) {
             }
         },
 
-        edit: function (data) {
-            var dataset = {
-                    title: data[0].value,
-                    description: data[1].value
-                },
-                years = data[4].value,
-                months = data[5].value,
-                days = data[6].value,
-                hours = data[7].value,
-                minutes = data[8].value,
-                seconds = data[9].value;
+        edit: function (dataset, countdown) {
+            // TODO validation
+            dataset.enddate = new Date(dataset.datetime);
+            dataset.enddate.setTime(dataset.enddate.getTime() + (dataset.enddate.getTimezoneOffset()*60000));
+            delete dataset.datetime;
 
             if (!this.interval_id
-                && parseInt(hours) == hours
-                && parseInt(hours) >= 0
-                && parseInt(minutes) == minutes
-                && parseInt(minutes) >= 0
-                && parseInt(seconds) == seconds
-                && parseInt(seconds) >= 0
-                && (parseInt(hours) > 0 || parseInt(minutes) > 0 || parseInt(seconds) > 0)
-                ) {
+                && parseInt(countdown.years) == countdown.years
+                && parseInt(countdown.years) >= 0
+                && parseInt(countdown.months) == countdown.months
+                && parseInt(countdown.months) >= 0
+                && parseInt(countdown.days) == countdown.days
+                && parseInt(countdown.days) >= 0
+                && parseInt(countdown.hours) == countdown.hours
+                && parseInt(countdown.hours) >= 0
+                && parseInt(countdown.minutes) == countdown.minutes
+                && parseInt(countdown.minutes) >= 0
+                && parseInt(countdown.seconds) == countdown.seconds
+                && parseInt(countdown.seconds) >= 0
+                && (parseInt(countdown.years) > 0 || parseInt(countdown.months) > 0 || parseInt(countdown.days) > 0
+                    || parseInt(countdown.hours) > 0 || parseInt(countdown.minutes) > 0 || parseInt(countdown.seconds) > 0
+                )
+            ) {
                 var date = new Date();
-                date.setHours(date.getHours() + parseInt(hours));
-                date.setMinutes(date.getMinutes() + parseInt(minutes));
-                date.setSeconds(date.getSeconds() + parseInt(seconds));
+                date.setFullYear(date.getFullYear() + parseInt(countdown.years));
+                date.setMonth(date.getMonth() + parseInt(countdown.months));
+                date.setDate(date.getDate() + parseInt(countdown.days));
+                date.setHours(date.getHours() + parseInt(countdown.hours));
+                date.setMinutes(date.getMinutes() + parseInt(countdown.minutes));
+                date.setSeconds(date.getSeconds() + parseInt(countdown.seconds));
                 dataset.enddate = date;
             }
 

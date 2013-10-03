@@ -12,7 +12,8 @@ requirejs.config({
 
         modernizr: '../lib/modernizr',
         foundation: '../lib/foundation/foundation',
-        datepicker: '../lib/foundation/foundation-datepicker'
+        f_reveal: '../lib/foundation/foundation.reveal',
+        f_forms: '../lib/foundation/foundation.forms'
     },
     shim: {
         'backbone': {
@@ -34,13 +35,16 @@ requirejs.config({
         foundation: {
             deps: ['modernizr', 'zepto']
         },
-        datepicker: {
+        f_reveal: {
+            deps: ['foundation']
+        },
+        f_forms: {
             deps: ['foundation']
         }
     }
 });
 
-require(['app', 'cookie', 'getscript', 'foundation', 'datepicker'], function (App) {
+require(['app', 'cookie', 'getscript', 'foundation', 'f_reveal', 'f_forms'], function (App) {
 
     App.init();
 
