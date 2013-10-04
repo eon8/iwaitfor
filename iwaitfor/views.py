@@ -58,7 +58,7 @@ def add_timer_json(request):
         # todo json_body validation
         user = USERS(authenticated_userid(request))
         new = Timer(title=request.json_body['title'],
-                    name=request.json_body['name'],
+                    name=request.json_body['name'] if request.json_body['name'] else None,
                     description=request.json_body['description'],
                     enddate=request.json_body['enddate'],
                     is_public=request.json_body['is_public'],
@@ -79,10 +79,11 @@ def edit_timer_json(request):
     if request.method == 'PUT' and request.json_body['enddate']:
         # todo json_body raises exception
         timer.title = request.json_body['title']
-        timer.name = request.json_body['name']
+        timer.name = request.json_body['name'] if request.json_body['name'] else None
         timer.description = request.json_body['description']
         timer.enddate = request.json_body['enddate']
         timer.is_public = request.json_body['is_public']
+        timer.is_approved = timer.name and len(timer.name) > Timer.__name_limit__
 
     return {'id': timer.id}
 

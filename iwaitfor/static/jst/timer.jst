@@ -4,27 +4,66 @@
             <%= title %>
         </span>
         <span class="data-edit hide">
-            <input name="title" value="<%= title %>">
+            <input type="text" name="title" value="<%= title %>">
         </span>
     </h1>
-    <p>
+    <p class="lead">
         <span class="data-view">
             <%= description %>
         </span>
         <span class="data-edit hide">
-            <input name="description" value="<%= description %>">
+            <textarea name="description"><%= description %></textarea>
         </span>
     </p>
-    <p>
-        <input name="date" value="<%= new Date(enddate).getMonth() + 1 + '/' + new Date(enddate).getDate() + '/' + new Date(enddate).getFullYear() %>">
-        <input name="time" value="<%= new Date(enddate).getHours() + ':' + new Date(enddate).getMinutes() %>">
-        <!-- TODO mobile native -->
-    </p>
+    <h3>
+        <span class="timer-date">
+            <span class="data-view">
+                <%= enddate.toLocaleString() %>
+            </span>
+            <span class="data-edit hide">
+               <input type="datetime-local" name="datetime" value="<%= new Date(enddate.getTime() - (enddate.getTimezoneOffset()*60000)).toISOString().slice(0, 16) %>">
+            </span>
+        </span>
+    </h3>
     <h2>
-        <div id="timer-time"></div>
+        <div id="timer-countdown"></div>
     </h2>
     <% if (show_save) { %>
       <input type="submit" class="large success button" value="Save">
+
+      <!-- TODO extract to another jst -->
+      <div id="myModal" class="reveal-modal small">
+        <h2>Additional properties.</h2>
+        <p class="lead">Please fill it.</p>
+          <fieldset>
+            <legend>Fieldset Legend</legend>
+
+            <label>Optional name for clean url</label>
+            <div class="row collapse">
+              <div class="small-5 large-3 columns">
+                <span class="prefix">http://iwaitfor.com/</span>
+              </div>
+              <div class="small-7 large-9 columns">
+                <input type="url" name="name" placeholder="Enter your URL..." value="<%= name %>">
+              </div>
+            </div>
+
+            <label>Is it public for other users</label>
+            <div class="small-2 switch small round">
+              <input id="x1" name="is_public" type="radio" value="false"<%= is_public ? '' : ' checked' %>>
+              <label for="x1" onclick="">No</label>
+
+              <input id="x2" name="is_public" type="radio" value="true"<%= is_public ? ' checked' : '' %>>
+              <label for="x2" onclick="">Yes</label>
+<!-- TODO FIX false is string and always true -->
+              <span></span>
+            </div>
+          </fieldset>
+        <button id="save-properties">Save</button>
+        <a class="close-reveal-modal">&#215;</a>
+      </div>
     <% } %>
+    <input type="hidden" name="name" value="<%= name %>">
+    <input type="hidden" name="is_public" value="<%= is_public %>">
 </form>
 <hr />

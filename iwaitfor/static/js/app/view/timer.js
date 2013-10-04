@@ -1,4 +1,4 @@
-define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-time.jst', 'model/user'], function (Backbone, html, time_html, User) {
+define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst', 'model/user'], function (Backbone, html, time_html, User) {
 
     var TimerView = Backbone.View.extend({
 
@@ -27,7 +27,8 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-time.jst', 'model/user
 
                 var el = $(e.currentTarget);
                 el.addClass('hide');
-                el.parent().find('.data-edit').removeClass('hide');
+                var input = el.parent().find('.data-edit').removeClass('hide').find('textarea, input:first');
+                input.focus().val(input.val());
 
                 if (el.hasClass('time')) {
                     this.model.stop();
@@ -44,7 +45,21 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-time.jst', 'model/user
         set: function () {
             if (this.is_edit) {
                 this.is_edit = false;
-                this.model.edit(this.$('form').serializeArray());
+                var form = this.$('form')[0];
+                this.model.edit({
+                    title: form.title.value,
+                    name: form.name.value, // TODO check for unique
+                    description: form.description.value,
+                    datetime: form.datetime.value,
+                    is_public: form.is_public.value
+                }, {
+                    years: form.years.value,
+                    months: form.months.value,
+                    days: form.days.value,
+                    hours: form.hours.value,
+                    minutes: form.minutes.value,
+                    seconds: form.seconds.value
+                });
                 if (this.model.hasChanged()) {
                     this.model.markDirty();
                 }
@@ -56,35 +71,65 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-time.jst', 'model/user
         save: function (e) {
             e.preventDefault();
             this.set();
-            // TODO too much - has to be in model
-            if (User.canEdit(this.model)) {
-                User.listenToOnce(this.model, 'sync', User.addTimer);
-                this.model.save(null, {success: function () {
-                    this.model.markClean();
-                    this.render();
-                }.bind(this)});
-                // TODO если счетчик по нолям ил меньше минимума - не сохранять
-                // TODO убрать 500 при сохранении нулей
-                // TODO если метод edit не прошел валидацию - на сервер не отправляется enddate - 500
-            } else {
-                alert('You have to be authorized');
+
+            if (!User.get('logged_in')) {
+                this.showAuthorization();
+                return;
             }
+
+            if (this.model.isNew()) {
+                this.showSaveProperties();
+                return;
+            }
+
+            this.saveToModel();
+        },
+
+        showAuthorization: function () {
+            alert('You have to be authorized');
+        },
+
+        showSaveProperties: function () {
+            // TODO refactor
+            $('#myModal').foundation('reveal', 'open'); // TODO make up an id
+            $('#save-properties').one('click', function () {
+                var form = this.$('form')[0];
+                form.name.value = $('#myModal [name=name]').val();
+                form.is_public.value = $('#myModal [name=is_public]:checked').val();
+                this.is_edit = true;
+                this.set();
+                $('#myModal').foundation('reveal', 'close');
+                this.saveToModel();
+            }.bind(this));
+        },
+
+        saveToModel: function () {
+
+            this.model.once('sync', function () {
+                User.addTimer(this.model); // TODO call only for new?
+                this.model.markClean();
+                this.render();
+            }, this);
+
+            this.model.save();
+            // TODO если счетчик по нолям ил меньше минимума - не сохранять
+            // TODO убрать 500 при сохранении нулей
+            // TODO если метод edit не прошел валидацию - на сервер не отправляется enddate - 500
         },
 
         render: function () {
             this.$el.html(this.template(_.extend({
                 show_save: this.model.isDirty() && this.model.isValid() && User.canEdit(this.model)
             }, this.model.attributes)));
-            this.$('[name=date]').fdatepicker();
             this.render_time();
             return this;
         },
 
         render_time: function () {
-            if (!this.$('#timer-time').length) {
+            if (!this.$('#timer-countdown').length) {
                 this.render();
             } else {
-                this.$('#timer-time').html(this.time_template(this.model.datetime));
+                this.$('#timer-countdown').html(this.time_template(this.model.datetime));
             }
             return this;
         }

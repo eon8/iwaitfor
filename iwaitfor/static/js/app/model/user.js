@@ -75,6 +75,8 @@ define(['backbone', 'router', 'auth/google'], function (Backbone, Router, Google
             if (new_timer_ids.length > old_timer_ids.length) {
                 $.cookie('auth_timer_ids', new_timer_ids, {path: '/'}); // TODO бывает сохраняет два раза один и тот же
                 Router.navigate('id/' + model.id, {trigger: true});
+                // TODO if it is approved - move to named url
+                // TODO if we hit back button - make a reload!
             }
         },
 

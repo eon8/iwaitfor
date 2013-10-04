@@ -73,18 +73,18 @@ class Timer(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     is_approved = Column(Boolean)
     is_public = Column(Boolean)
-    view_count = Column(Integer)
 
-    def __init__(self, title, enddate, user, name=None, description=''):
+    __name_limit__ = 10
+
+    def __init__(self, title, enddate, user, name=None, description='', is_public=True):
         self.name = name
         self.title = title
         self.description = description
         self.enddate = enddate
         self.created = self.updated = datetime.now().isoformat()
         self.user_id = user.id
-        self.is_approved = True
-        self.is_public = True
-        self.view_count = 0
+        self.is_approved = self.name and len(self.name) > Timer.__name_limit__
+        self.is_public = is_public
 
     def get_public_attributes(self):
         return {'id': self.id,

@@ -21,7 +21,6 @@ define(['backbone'], function (Backbone) {
             enddate: new Date(),
             name: '',
             is_public: true, // TODO maybe string or int
-            view_count: 0
         },
 
         initialize: function (attributes) {
