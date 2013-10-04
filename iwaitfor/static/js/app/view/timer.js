@@ -94,8 +94,8 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst', 'model
             $('#myModal').foundation('reveal', 'open'); // TODO make up an id
             $('#save-properties').one('click', function () {
                 var form = this.$('form')[0];
-                form.name.value = $('#myModal [name=name]').val();
-                form.is_public.value = $('#myModal [name=is_public]:checked').val();
+                form.name.value = $('#myModal [name=namex]').val();
+                form.is_public.value = $('#myModal [name=is_publicx]:checked').val();
                 this.is_edit = true;
                 this.set();
                 $('#myModal').foundation('reveal', 'close');
