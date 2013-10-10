@@ -19,8 +19,8 @@ define(['backbone'], function (Backbone) {
 
         defaults: {
             enddate: new Date(),
-            name: '',
-            is_public: true, // TODO maybe string or int
+            name: null, // TODO check to be null on server
+            is_public: true // TODO maybe string or int
         },
 
         initialize: function (attributes) {
@@ -110,6 +110,8 @@ define(['backbone'], function (Backbone) {
 
         edit: function (dataset, countdown) {
             // TODO validation
+            dataset.name = dataset.name || null;
+            dataset.is_public = !!dataset.is_public;
             dataset.enddate = new Date(dataset.datetime);
             dataset.enddate.setTime(dataset.enddate.getTime() + (dataset.enddate.getTimezoneOffset()*60000));
             delete dataset.datetime;
@@ -149,13 +151,18 @@ define(['backbone'], function (Backbone) {
         },
 
         markDirty: function () {
-            // TODO window.onbeforeunload
             this.is_dirty = true;
+            $(window).on('beforeunload', this.showDirtyMessage);
         },
 
         markClean: function () {
             this.set({id: this.id}); // Хак, чтобы id не считалось измененным
             this.is_dirty = false;
+            $(window).off('beforeunload', this.showDirtyMessage);
+        },
+
+        showDirtyMessage: function () {
+            return 'Current timer is not saved. You will loose changes if you leave the page.';
         }
 
     });

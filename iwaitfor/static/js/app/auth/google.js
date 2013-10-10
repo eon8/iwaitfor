@@ -12,7 +12,7 @@ define(['backbone'], function (Backbone) {
 
             scope: [
                 'https://www.googleapis.com/auth/plus.login',
-                'https://www.googleapis.com/auth/userinfo.email' //TODO check email without this on serverside
+                'https://www.googleapis.com/auth/userinfo.email'
             ],
 
             initialize: function () {

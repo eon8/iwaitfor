@@ -58,7 +58,7 @@ def add_timer_json(request):
         # todo json_body validation
         user = USERS(authenticated_userid(request))
         new = Timer(title=request.json_body['title'],
-                    name=request.json_body['name'] if request.json_body['name'] else None,
+                    name=request.json_body['name'] if request.json_body['name'] else None, #TODO has to be unique
                     description=request.json_body['description'],
                     enddate=request.json_body['enddate'],
                     is_public=request.json_body['is_public'],

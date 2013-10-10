@@ -21,7 +21,7 @@
                 <%= enddate.toLocaleString() %>
             </span>
             <span class="data-edit hide">
-               <input type="datetime-local" name="datetime" value="<%= new Date(enddate.getTime() - (enddate.getTimezoneOffset()*60000)).toISOString().slice(0, 16) %>">
+               <input type="text" name="datetime" value="<%= enddate.toISOString() %>">
             </span>
         </span>
     </h3>

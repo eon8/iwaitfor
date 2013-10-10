@@ -48,7 +48,7 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst', 'model
                 var form = this.$('form')[0];
                 this.model.edit({
                     title: form.title.value,
-                    name: form.name.value, // TODO check for unique
+                    name: form.name.value,
                     description: form.description.value,
                     datetime: form.datetime.value,
                     is_public: form.is_public.value
