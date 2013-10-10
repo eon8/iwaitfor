@@ -50,8 +50,13 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst', 'model
                     title: form.title.value,
                     name: form.name.value,
                     description: form.description.value,
-                    datetime: form.datetime.value,
-                    is_public: form.is_public.value
+                    is_public: form.is_public.value,
+                    end: {
+                        month:form.end_month.value,
+                        day: form.end_day.value,
+                        year: form.end_year.value,
+                        time: form.end_time.value
+                    }
                 }, {
                     years: form.years.value,
                     months: form.months.value,
@@ -121,6 +126,7 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst', 'model
             this.$el.html(this.template(_.extend({
                 show_save: this.model.isDirty() && this.model.isValid() && User.canEdit(this.model)
             }, this.model.attributes)));
+            this.fillEndDate();
             this.render_time();
             return this;
         },
@@ -132,6 +138,68 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst', 'model
                 this.$('#timer-countdown').html(this.time_template(this.model.datetime));
             }
             return this;
+        },
+
+        fillEndDate: function () {
+            var month_select = this.$('[name=end_month]'),
+                enddate = this.model.get('enddate');
+            _.each(this.months, function(month, key) {
+                month_select.append('<option value="' + key + '"' + (key == (enddate.getMonth() + 1) ? ' selected' : '') + '>' + month.name + '</option>');
+            });
+            this.$('[name=end_day]').val(enddate.getDate());
+            this.$('[name=end_year]').val(enddate.getFullYear());
+            this.$('[name=end_time]').val(enddate.toTimeString().slice(0, 8));
+        },
+
+        months: {
+            1: {
+                name: 'January',
+                days: 31
+            },
+            2: {
+                name: 'February',
+                days: 29
+            },
+            3: {
+                name: 'March',
+                days: 31
+            },
+            4: {
+                name: 'April',
+                days: 30
+            },
+            5: {
+                name: 'May',
+                days: 31
+            },
+            6: {
+                name: 'June',
+                days: 30
+            },
+            7: {
+                name: 'July',
+                days: 31
+            },
+            8: {
+                name: 'August',
+                days: 31
+            },
+            9: {
+                name: 'September',
+                days: 30
+            },
+            10: {
+                name: 'October',
+                days: 31
+            },
+            11: {
+                name: 'November',
+                days: 30
+            },
+            12: {
+                name: 'December',
+                days: 31
+            }
         }
 
     });

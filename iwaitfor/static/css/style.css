@@ -25,19 +25,20 @@ body {
     text-align: center;
 }
 
-.timer-date input {
-    /*width: 5.2em;*/
+.timer-date select {
+    display: inline;
+    width: 6em;
 }
 
-.timer-time input {
-    /*width: 2.6em;*/
+.timer-date input {
+    display: inline;
+    width: 5.2em;
 }
 
 #timer-countdown strong {
     display: inline-block;
     width: 1.3em;
 }
-
 
 #timer-countdown em {
     color: gray;

@@ -17,10 +17,14 @@ define(['backbone'], function (Backbone) {
 
         is_dirty: false,
 
-        defaults: {
-            enddate: new Date(),
-            name: null, // TODO check to be null on server
-            is_public: true // TODO maybe string or int
+        defaults: function () {
+            var date = new Date();
+            date.setMilliseconds(0);
+            return {
+                enddate: date,
+                name: null, // TODO check to be null on server
+                is_public: true // TODO maybe string or int
+            }
         },
 
         initialize: function (attributes) {
@@ -112,9 +116,8 @@ define(['backbone'], function (Backbone) {
             // TODO validation
             dataset.name = dataset.name || null;
             dataset.is_public = !!dataset.is_public;
-            dataset.enddate = new Date(dataset.datetime);
-            dataset.enddate.setTime(dataset.enddate.getTime() + (dataset.enddate.getTimezoneOffset()*60000));
-            delete dataset.datetime;
+            dataset.enddate = new Date(dataset.end.year + '-' + dataset.end.month + '-' + dataset.end.day + ' ' + dataset.end.time);
+            delete dataset.end;
 
             if (!this.interval_id
                 && parseInt(countdown.years) == countdown.years
@@ -140,6 +143,7 @@ define(['backbone'], function (Backbone) {
                 date.setHours(date.getHours() + parseInt(countdown.hours));
                 date.setMinutes(date.getMinutes() + parseInt(countdown.minutes));
                 date.setSeconds(date.getSeconds() + parseInt(countdown.seconds));
+                date.setMilliseconds(0);
                 dataset.enddate = date;
             }
 
