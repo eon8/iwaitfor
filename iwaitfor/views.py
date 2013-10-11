@@ -1,5 +1,5 @@
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound, HTTPBadRequest
-from pyramid.view import view_config
+from pyramid.view import view_config, notfound_view_config, forbidden_view_config
 import json, requests
 
 from pyramid.security import (
@@ -14,6 +14,9 @@ from .models import (
     User
     )
 
+from sqlalchemy import desc
+from datetime import datetime
+
 from .security import (
     USERS,
     )
@@ -21,36 +24,39 @@ from .security import (
 import formencode
 from .validators import (TimerValidator)
 
-#TODO edit 403 failed permission check message
 
 @view_config(route_name='view_timer_by_name', renderer='iwaitfor:static/index.html', permission='view')
 def view_timer_by_name(request):
     attributes = Timer.get_default_attributes()
     metadata = Timer.get_default_metadata()
+
     if request.matchdict['timername']:
-        one = DBSession.query(Timer). \
+        timer = DBSession.query(Timer). \
             filter(Timer.name == request.matchdict['timername']). \
             filter(Timer.is_approved == True). \
             first()
-        if one:
-            attributes = one.get_public_attributes()
-            metadata = one.get_metadata()
-        else:
-            raise HTTPNotFound()
+
+        if timer is None:
+            raise HTTPNotFound
+
+        attributes = timer.get_public_attributes()
+        metadata = timer.get_metadata()
 
     return {'attributes': json.dumps(attributes), 'metadata': metadata}
 
 
 @view_config(route_name='view_timer_by_id', renderer='iwaitfor:static/index.html', permission='view')
 def view_timer_by_id(request):
-    one = DBSession.query(Timer).filter(Timer.id == request.matchdict['timerid']).first()
-    if one:
-        if one.name and one.is_approved:
-            raise HTTPFound(location=request.route_url('view_timer_by_name', timername=one.name))
-        attributes = one.get_public_attributes()
-        metadata = one.get_metadata()
-    else:
+    timer = DBSession.query(Timer).filter(Timer.id == request.matchdict['timerid']).first()
+
+    if timer is None:
         raise HTTPNotFound
+
+    if timer.name and timer.is_approved:
+        raise HTTPFound(location=request.route_url('view_timer_by_name', timername=timer.name))
+
+    attributes = timer.get_public_attributes()
+    metadata = timer.get_metadata()
 
     return {'attributes': json.dumps(attributes), 'metadata': metadata}
 
@@ -72,10 +78,10 @@ def add_timer_json(request):
 
     else:
         user = USERS(authenticated_userid(request))
-        new = Timer(user=user, **data)
-        DBSession.add(new)
+        timer = Timer(user=user, **data)
+        DBSession.add(timer)
         DBSession.flush()
-        result = {'id': new.id}
+        result = timer.get_public_attributes()
 
     return result
 
@@ -101,14 +107,27 @@ def edit_timer_json(request):
 
     else:
         timer.set(**data)
-        result =  {'id': timer.id}
+        result = timer.get_public_attributes()
 
     return result
 
 
+@view_config(route_name='other_timers', renderer='json')
+def other_timers(request):
+    # TODO check for timezone in comparison
+    popular = DBSession.query(Timer).filter(Timer.enddate > datetime.now()).filter(Timer.is_public == True).order_by(Timer.name).limit(10)
+    soon = DBSession.query(Timer).filter(Timer.enddate > datetime.now()).filter(Timer.is_public == True).order_by(Timer.enddate).limit(10)
+    news = DBSession.query(Timer).filter(Timer.enddate > datetime.now()).filter(Timer.is_public == True).order_by(desc(Timer.id)).limit(10)
+
+    return {
+        'popular': [timer.get_short_public_attributes() for timer in popular],
+        'soon': [timer.get_short_public_attributes() for timer in soon],
+        'news': [timer.get_short_public_attributes() for timer in news]
+    }
+
+
 @view_config(route_name='login', renderer='json')
 def login(request):
-
     # import sys
     # sys.path.append('/home/dave/dev/pycharm-2.7.3/pycharm-debug-py3k.egg')
     # import pydevd
@@ -132,9 +151,9 @@ def login(request):
                     user_name = user.name
                     timer_ids = [timer.id for timer in user.timers]
                 else:
-                   raise HTTPBadRequest
+                    raise HTTPBadRequest
             else:
-               raise HTTPBadRequest
+                raise HTTPBadRequest
         else:
             raise HTTPBadRequest
     else:
@@ -173,3 +192,15 @@ def logout(request):
     #         'body': body,
     #         'errors': errors,
     #     }
+
+
+@notfound_view_config(renderer='404.mako')
+def notfound_view(request):
+    request.response.status = '404 Not Found'
+    return {}
+
+
+@forbidden_view_config(renderer='403.mako')
+def forbidden_view(request):
+    request.response.status = '403 Forbidden'
+    return {}

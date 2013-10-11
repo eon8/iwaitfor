@@ -96,7 +96,13 @@ class Timer(Base):
                 'title': self.title,
                 'description': self.description,
                 'enddate': str(self.enddate),
-                'is_public': self.is_public}
+                'is_public': self.is_public,
+                'is_approved': self.is_approved}
+
+    def get_short_public_attributes(self):
+        return {'title': self.title,
+                'enddate': str(self.enddate),
+                'url': '/%s' % self.name if self.is_approved else '/id/%d' % self.id} # TODO find method for urls
 
     def get_metadata(self):
         return {'title': self.title,

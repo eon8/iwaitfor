@@ -1,3 +1,4 @@
+import os
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 
@@ -20,6 +21,10 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
     authn_policy = AuthTktAuthenticationPolicy('sofuckinsecret', callback=groupfinder, hashalg='sha512')
     authz_policy = ACLAuthorizationPolicy()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    settings['mako.directories'] = os.path.join(here, 'templates')
+
     config = Configurator(settings=settings,
                           root_factory=RootFactory,
                           authentication_policy=authn_policy,
@@ -28,6 +33,7 @@ def main(global_config, **settings):
     config.add_renderer('.html', 'pyramid.mako_templating.renderer_factory')
     config.add_route('add_timer_json', '/q/timer', factory=TimerFactory)
     config.add_route('edit_timer_json', '/q/timer/{timerid:\d+}', factory=TimerFactory, traverse='/{timerid}')
+    config.add_route('other_timers', '/q/other_timers')
     config.add_route('login', '/q/login/{provider}')
     config.add_route('logout', '/q/logout')
     config.add_route('view_timer_by_id', '/id/{timerid:\d+}')

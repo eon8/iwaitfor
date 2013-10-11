@@ -27,10 +27,14 @@ define(['backbone'], function (Backbone) {
             }
         },
 
-        initialize: function (attributes) {
-            if (attributes.enddate) {
-                this.set('enddate', new Date(attributes.enddate));
+        parse: function (data) {
+            if (data.enddate) {
+                data.enddate = new Date(data.enddate);
             }
+            return data;
+        },
+
+        initialize: function (attributes) {
         },
 
         update: function () {
@@ -133,9 +137,9 @@ define(['backbone'], function (Backbone) {
                 && parseInt(countdown.seconds) == countdown.seconds
                 && parseInt(countdown.seconds) >= 0
                 && (parseInt(countdown.years) > 0 || parseInt(countdown.months) > 0 || parseInt(countdown.days) > 0
-                    || parseInt(countdown.hours) > 0 || parseInt(countdown.minutes) > 0 || parseInt(countdown.seconds) > 0
+                || parseInt(countdown.hours) > 0 || parseInt(countdown.minutes) > 0 || parseInt(countdown.seconds) > 0
                 )
-            ) {
+                ) {
                 var date = new Date();
                 date.setFullYear(date.getFullYear() + parseInt(countdown.years));
                 date.setMonth(date.getMonth() + parseInt(countdown.months));

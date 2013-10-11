@@ -74,8 +74,11 @@ define(['backbone', 'router', 'auth/google'], function (Backbone, Router, Google
                 new_timer_ids = _.union(old_timer_ids, String(model.id));
             if (new_timer_ids.length > old_timer_ids.length) {
                 $.cookie('auth_timer_ids', new_timer_ids, {path: '/'});
-                Router.navigate('id/' + model.id, {trigger: true, replace: true});
-                // TODO if it is approved - move to named url
+                if (model.get('is_approved')) {
+                    Router.navigate(model.get('name'), {trigger: true, replace: true});
+                } else {
+                    Router.navigate('id/' + model.id, {trigger: true, replace: true});
+                }
             }
         },
 
