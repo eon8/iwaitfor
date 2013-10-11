@@ -47,9 +47,7 @@ class TimerFactory(object):
         self.request = request
 
     def __getitem__(self, item):
-        # TODO maybe there is a get_by_id method
         return DBSession.query(Timer).filter(Timer.id == item).first()
-# TODO check for 404 if there is no timer ^
 
 class Timer(Base):
     @property
@@ -81,10 +79,16 @@ class Timer(Base):
         self.title = title
         self.description = description
         self.enddate = enddate
-        self.created = self.updated = datetime.now().isoformat()
         self.user_id = user.id
-        self.is_approved = self.name and len(self.name) > Timer.__name_limit__
         self.is_public = is_public
+
+        self.set(created=datetime.now().isoformat())
+
+    def set(self, **data):
+        for key, value in data.items(): setattr(self, key, value)
+
+        self.is_approved = self.name and len(self.name) > self.__name_limit__
+        self.updated = datetime.now().isoformat()
 
     def get_public_attributes(self):
         return {'id': self.id,
@@ -98,6 +102,21 @@ class Timer(Base):
         return {'title': self.title,
                 'keywords': self.title,
                 'description': self.description}
+
+    @staticmethod
+    def get_default_metadata():
+        return {
+            'title': 'Free OnLine Timer',
+            'keywords': 'Free OnLine Timer',
+            'description': 'Free OnLine Timer',
+        }
+
+    @staticmethod
+    def get_default_attributes():
+        return {
+            'title': 'Free OnLine Timer',
+            'description': 'new timer'
+        }
 
 
 class User(Base):

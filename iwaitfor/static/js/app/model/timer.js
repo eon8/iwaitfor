@@ -1,6 +1,6 @@
 define(['backbone'], function (Backbone) {
 
-    var TimerModel = Backbone.Model.extend({
+    return Backbone.Model.extend({
 
         urlRoot: '/q/timer',
 
@@ -170,7 +170,5 @@ define(['backbone'], function (Backbone) {
         }
 
     });
-
-    return TimerModel;
 
 });

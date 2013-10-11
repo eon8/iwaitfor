@@ -1,7 +1,6 @@
-define(['backbone', 'text!jst/user.jst', 'model/user'], function (Backbone, html, User) {
+define(['backbone', 'model/user', 'text!jst/user.jst'], function (Backbone, User, html) {
 
-    // TODO model is User?
-    var UserView = Backbone.View.extend({
+    return Backbone.View.extend({
 
         template: _.template(html),
 
@@ -23,13 +22,10 @@ define(['backbone', 'text!jst/user.jst', 'model/user'], function (Backbone, html
         },
 
         render: function () {
-            // TODO render not logged in view at start
             this.$el.html(this.template(User.getTemplateVars()));
             return this;
         }
 
     });
-
-    return UserView;
 
 });

@@ -1,11 +1,11 @@
-define(['backbone', 'text!jst/logo.jst', 'router'], function (Backbone, html, Router) {
+define(['backbone', 'router', 'text!jst/logo.jst'], function (Backbone, Router, html) {
 
-    var LogoView = Backbone.View.extend({
+    return Backbone.View.extend({
 
         template: _.template(html),
 
         initialize: function () {
-            this.listenTo(Router, 'route:id', this.render);
+            this.listenTo(Router, 'route', this.render);
         },
 
         render: function () {
@@ -14,7 +14,5 @@ define(['backbone', 'text!jst/logo.jst', 'router'], function (Backbone, html, Ro
         }
 
     });
-
-    return LogoView;
 
 });

@@ -1,6 +1,6 @@
-define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst', 'model/user'], function (Backbone, html, time_html, User) {
+define(['backbone', 'model/user', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst'], function (Backbone, User, html, time_html) {
 
-    var TimerView = Backbone.View.extend({
+    return Backbone.View.extend({
 
         is_edit: false,
 
@@ -15,6 +15,7 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst', 'model
         },
 
         initialize: function () {
+            this.listenTo(this.model, 'sync', this.render);
             this.listenTo(this.model, 'change', this.render);
             this.listenTo(this.model, 'update', this.render_time);
             this.listenTo(User, 'change:logged_in', this.render);
@@ -110,13 +111,15 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst', 'model
 
         saveToModel: function () {
 
-            this.model.once('sync', function () {
-                User.addTimer(this.model); // TODO call only for new?
-                this.model.markClean();
-                this.render();
-            }, this);
-
-            this.model.save();
+            this.model.save(null, {
+                success: function (model) {
+                    User.addTimer(model); // TODO call only for new?
+                    model.markClean();
+                }.bind(this),
+                error: function (model, xhr) {
+                    console.log(xhr.response); //TODO make cool
+                }.bind(this)
+            });
             // TODO если счетчик по нолям ил меньше минимума - не сохранять
             // TODO убрать 500 при сохранении нулей
             // TODO если метод edit не прошел валидацию - на сервер не отправляется enddate - 500
@@ -203,7 +206,5 @@ define(['backbone', 'text!jst/timer.jst', 'text!jst/timer-countdown.jst', 'model
         }
 
     });
-
-    return TimerView;
 
 });

@@ -31,8 +31,6 @@ def main(global_config, **settings):
     config.add_route('login', '/q/login/{provider}')
     config.add_route('logout', '/q/logout')
     config.add_route('view_timer_by_id', '/id/{timerid:\d+}')
-    config.add_route('view_timer_by_name', '/{timername:\w*}') # TODO check pattern, add '-'
+    config.add_route('view_timer_by_name', '/{timername:[\w-]*}')
     config.scan()
     return config.make_wsgi_app()
-
-# TODO move to https?

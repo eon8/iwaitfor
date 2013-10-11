@@ -1,5 +1,3 @@
-// Router
-
 define(['backbone'], function (Backbone) {
 
     var Router = new Backbone.Router({

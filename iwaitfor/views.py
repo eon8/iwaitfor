@@ -17,12 +17,16 @@ from .models import (
 from .security import (
     USERS,
     )
+
+import formencode
+from .validators import (TimerValidator)
+
 #TODO edit 403 failed permission check message
 
 @view_config(route_name='view_timer_by_name', renderer='iwaitfor:static/index.html', permission='view')
 def view_timer_by_name(request):
-    attributes = get_default_attributes()
-    metadata = get_default_metadata()
+    attributes = Timer.get_default_attributes()
+    metadata = Timer.get_default_metadata()
     if request.matchdict['timername']:
         one = DBSession.query(Timer). \
             filter(Timer.name == request.matchdict['timername']). \
@@ -32,7 +36,7 @@ def view_timer_by_name(request):
             attributes = one.get_public_attributes()
             metadata = one.get_metadata()
         else:
-            raise HTTPNotFound
+            raise HTTPNotFound()
 
     return {'attributes': json.dumps(attributes), 'metadata': metadata}
 
@@ -41,7 +45,6 @@ def view_timer_by_name(request):
 def view_timer_by_id(request):
     one = DBSession.query(Timer).filter(Timer.id == request.matchdict['timerid']).first()
     if one:
-        # todo is is_approved a good name?
         if one.name and one.is_approved:
             raise HTTPFound(location=request.route_url('view_timer_by_name', timername=one.name))
         attributes = one.get_public_attributes()
@@ -54,53 +57,53 @@ def view_timer_by_id(request):
 
 @view_config(route_name='add_timer_json', renderer='json', permission='add')
 def add_timer_json(request):
-    if request.method == 'POST':
-        # todo json_body validation
-        user = USERS(authenticated_userid(request))
-        new = Timer(title=request.json_body['title'],
-                    name=request.json_body['name'] if request.json_body['name'] else None, #TODO has to be unique
-                    description=request.json_body['description'],
-                    enddate=request.json_body['enddate'],
-                    is_public=request.json_body['is_public'],
-                    user=user)
-        DBSession.add(new)
-        DBSession.flush()
-        attributes = {'id': new.id}
-
-    else:
+    if request.method != 'POST':
         raise HTTPBadRequest
 
-    return attributes
+    try:
+        data = (TimerValidator()).to_python(request.json_body)
+
+    except ValueError:
+        raise HTTPBadRequest
+
+    except formencode.Invalid as e:
+        request.response.status = 400
+        result = e.unpack_errors()
+
+    else:
+        user = USERS(authenticated_userid(request))
+        new = Timer(user=user, **data)
+        DBSession.add(new)
+        DBSession.flush()
+        result = {'id': new.id}
+
+    return result
 
 
+# TODO remove duplicate code
 @view_config(route_name='edit_timer_json', renderer='json', permission='edit')
 def edit_timer_json(request):
-    timer = request.context
-    if request.method == 'PUT' and request.json_body['enddate']:
-        # todo json_body raises exception
-        timer.title = request.json_body['title']
-        timer.name = request.json_body['name'] if request.json_body['name'] else None
-        timer.description = request.json_body['description']
-        timer.enddate = request.json_body['enddate']
-        timer.is_public = request.json_body['is_public']
-        timer.is_approved = timer.name and len(timer.name) > Timer.__name_limit__
+    if request.method != 'PUT':
+        raise HTTPBadRequest
 
-    return {'id': timer.id}
+    try:
+        timer = request.context
+        body = request.json_body
+        body.pop('id')
+        data = TimerValidator().to_python(body, timer)
 
+    except ValueError:
+        raise HTTPBadRequest
 
-def get_default_metadata():
-    return {
-        'title': 'Free OnLine Timer',
-        'keywords': 'Free OnLine Timer',
-        'description': 'Free OnLine Timer',
-    }
+    except formencode.Invalid as e:
+        request.response.status = 400
+        result = e.unpack_errors()
 
-# TODO to user model as static method
-def get_default_attributes():
-    return {
-        'title': 'Free OnLine Timer',
-        'description': 'new timer'
-    }
+    else:
+        timer.set(**data)
+        result =  {'id': timer.id}
+
+    return result
 
 
 @view_config(route_name='login', renderer='json')
@@ -119,7 +122,7 @@ def login(request):
                 token_info = r.json()
                 if token_info['audience'] == '818705857064.apps.googleusercontent.com':
                     user = USERS(token_info['email'])
-                    if not user:
+                    if user is None:
                         user = User(login=token_info['email'], name=request.params['displayName'])
                         DBSession.add(user)
                     headers = remember(request, user.login)
