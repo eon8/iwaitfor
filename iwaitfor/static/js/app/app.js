@@ -1,5 +1,5 @@
-define(['backbone', 'model/timer', 'view/timer', 'model/user', 'view/user', 'view/logo', 'view/other_timers', 'view/social'],
-function (Backbone, TimerModel, TimerView, User, UserView, LogoView, OtherTimersView, SocialView) {
+define(['backbone', 'model/timer', 'view/timer', 'model/user', 'view/logo', 'view/other_timers', 'view/social'],
+function (Backbone, TimerModel, TimerView, User, LogoView, OtherTimersView, SocialView) {
 
     return {
 
@@ -21,13 +21,14 @@ function (Backbone, TimerModel, TimerView, User, UserView, LogoView, OtherTimers
                 Timer.start();
 
                 var logo_view = new LogoView({el: $('#logo')}).render();
-                var user_view = new UserView({el: $('#user')}).render();
 
                 if (Timer.isNew()) {
                     var other_timers_view = new OtherTimersView({el: $('#other_timers')}).load();
                 } else {
                     var social_view = new SocialView({el: $('#social')}).load();
                 }
+
+                User.registerApis();
 
             }.bind(this));
 

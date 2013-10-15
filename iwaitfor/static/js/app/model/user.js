@@ -7,7 +7,7 @@ define(['backbone', 'router', 'auth/google'], function (Backbone, Router, Google
         is_busy: false,
 
         initialize: function () {
-            this.registerApis();
+            this.on('change:logged_in', this.updateView.bind(this));
         },
 
         registerApis: function () {
@@ -20,14 +20,6 @@ define(['backbone', 'router', 'auth/google'], function (Backbone, Router, Google
                 }.bind(this),
                 logged_out: this.logout.bind(this)
             });
-        },
-
-        loginApi: function (name) {
-            this.auth_apis[name].handleAuthClick();
-        },
-
-        logoutApi: function () {
-            this.auth_apis[this.api_name].handleUnAuthClick();
         },
 
         login: function (api_name) {
@@ -43,6 +35,7 @@ define(['backbone', 'router', 'auth/google'], function (Backbone, Router, Google
                             resp = JSON.parse(resp);
                             $.cookie('user_name', resp.user_name, {path: '/'});
                             $.cookie('auth_timer_ids', resp.timer_ids, {path: '/'});
+                            // TODO работа с куками
                             this.api_name = api_name;
                             this.set('logged_in', true);
                             this.is_busy = false;
@@ -82,16 +75,9 @@ define(['backbone', 'router', 'auth/google'], function (Backbone, Router, Google
             }
         },
 
-        getTemplateVars: function() {
-            var result = {
-                logged_in: this.get('logged_in'),
-                user_name: 'User'
-            };
-            if (result.logged_in) {
-                result.api_name = this.api_name;
-                result.user_name = $.cookie('user_name') || result.user_name;
-            }
-            return result;
+        updateView: function() {
+            user_name = $.cookie('user_name') || 'User';
+            $('#user_name').text(user_name);
         }
 
     });
