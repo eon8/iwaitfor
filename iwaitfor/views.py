@@ -67,6 +67,8 @@ def add_timer_json(request):
         raise HTTPBadRequest
 
     try:
+        body = request.json_body
+        body.pop('is_approved')
         data = (TimerValidator()).to_python(request.json_body)
 
     except ValueError:
@@ -96,6 +98,7 @@ def edit_timer_json(request):
         timer = request.context
         body = request.json_body
         body.pop('id')
+        body.pop('is_approved')
         data = TimerValidator().to_python(body, timer)
 
     except ValueError:

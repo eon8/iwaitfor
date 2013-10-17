@@ -31,42 +31,39 @@
     <h2>
         <div id="timer-countdown"></div>
     </h2>
-    <% if (show_save) { %>
-      <input type="submit" class="large success button" value="Save">
 
-      <!-- TODO extract to another jst -->
-      <div id="myModal" class="reveal-modal small">
-        <h2>Additional properties.</h2>
-        <p class="lead">Please fill it.</p>
-          <fieldset>
-            <legend>Fieldset Legend</legend>
+    <div class="row save-row<% if (!show_save) { %> hide<% } %>">
+        <div class="small-5 columns">
+            &nbsp;
+        </div>
+        <div class="small-2 columns">
 
-            <label>Optional name for clean url</label>
-            <div class="row collapse">
-              <div class="small-5 large-3 columns">
+            <input type="submit" class="large success radius button" value="Save">
+
+        </div>
+        <div class="small-5 columns save-prop">
+
+             <div class="row collapse">
+              <div class="small-5 columns">
                 <span class="prefix">http://iwaitfor.com/</span>
               </div>
-              <div class="small-7 large-9 columns">
-                <input type="url" name="namex" placeholder="Enter your URL..." value="<%= name %>">
+              <div class="small-7 columns">
+                <input type="url" name="name" placeholder="Possible user friendly url" value="<%= name %>">
               </div>
             </div>
 
-            <label>Is it public for other users</label>
-            <div class="small-2 switch small round">
-              <input id="x1" name="is_publicx" type="radio" value="false"<%= is_public ? '' : ' checked' %>>
-              <label for="x1" onclick="">No</label>
+            <div class="switch round">
+              <input id="x1" name="is_public" type="radio" value="false"<%= is_public ? '' : ' checked' %>>
+              <label for="x1" onclick="">This timer <strong>is not</strong> public</label>
 
-              <input id="x2" name="is_publicx" type="radio" value="true"<%= is_public ? ' checked' : '' %>>
-              <label for="x2" onclick="">Yes</label>
-<!-- TODO FIX false is string and always true -->
+              <input id="x2" name="is_public" type="radio" value="true"<%= is_public ? ' checked' : '' %>>
+              <label for="x2" onclick="">This timer <strong>is</strong> public</label>
+
               <span></span>
             </div>
-          </fieldset>
-        <button id="save-properties">Save</button>
-        <a class="close-reveal-modal">&#215;</a>
-      </div>
-    <% } %>
-    <input type="hidden" name="name" value="<%= name %>">
-    <input type="hidden" name="is_public" value="<%= is_public %>">
+
+        </div>
+    </div>
+
 </form>
 <hr />

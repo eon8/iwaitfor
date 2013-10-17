@@ -2,8 +2,6 @@ define(['backbone', 'model/user', 'text!jst/timer.jst', 'text!jst/timer-countdow
 
     return Backbone.View.extend({
 
-        is_edit: false,
-
         template: _.template(html),
         time_template: _.template(time_html),
 
@@ -24,8 +22,6 @@ define(['backbone', 'model/user', 'text!jst/timer.jst', 'text!jst/timer-countdow
         edit: function (e) {
             e.stopPropagation();
             if (User.canEdit(this.model)) {
-                this.is_edit = true;
-
                 var el = $(e.currentTarget);
                 el.addClass('hide');
                 var input = el.parent().find('.data-edit').removeClass('hide').find('textarea, input:first');
@@ -35,7 +31,11 @@ define(['backbone', 'model/user', 'text!jst/timer.jst', 'text!jst/timer-countdow
                     this.model.stop();
                 }
 
-                $(document).one('click', this.set.bind(this));
+                $(document).one('click', function () {
+                    if (this.$('.data-edit:visible').length) {
+                        this.set();
+                    }
+                }.bind(this));
             }
         },
 
@@ -44,34 +44,31 @@ define(['backbone', 'model/user', 'text!jst/timer.jst', 'text!jst/timer-countdow
         },
 
         set: function () {
-            if (this.is_edit) {
-                this.is_edit = false;
-                var form = this.$('form')[0];
-                this.model.edit({
-                    title: form.title.value,
-                    name: form.name.value,
-                    description: form.description.value,
-                    is_public: form.is_public.value,
-                    end: {
-                        month:form.end_month.value,
-                        day: form.end_day.value,
-                        year: form.end_year.value,
-                        time: form.end_time.value
-                    }
-                }, {
-                    years: form.years.value,
-                    months: form.months.value,
-                    days: form.days.value,
-                    hours: form.hours.value,
-                    minutes: form.minutes.value,
-                    seconds: form.seconds.value
-                });
-                if (this.model.hasChanged()) {
-                    this.model.markDirty();
+            var form = this.$('form')[0];
+            this.model.edit({
+                title: form.title.value,
+                name: form.name.value,
+                description: form.description.value,
+                is_public: this.$('form [name=is_public]:checked').val(),
+                end: {
+                    month:form.end_month.value,
+                    day: form.end_day.value,
+                    year: form.end_year.value,
+                    time: form.end_time.value
                 }
-                this.render();
-                this.model.start();
+            }, {
+                years: form.years.value,
+                months: form.months.value,
+                days: form.days.value,
+                hours: form.hours.value,
+                minutes: form.minutes.value,
+                seconds: form.seconds.value
+            });
+            if (this.model.hasChanged()) {
+                this.model.markDirty();
             }
+            this.render();
+            this.model.start();
         },
 
         save: function (e) {
@@ -83,46 +80,19 @@ define(['backbone', 'model/user', 'text!jst/timer.jst', 'text!jst/timer-countdow
                 return;
             }
 
-            if (this.model.isNew()) {
-                this.showSaveProperties();
-                return;
-            }
-
-            this.saveToModel();
+            this.model.save(null, {
+                success: function (model) {
+                    User.updateTimer(model);
+                    model.markClean();
+                }.bind(this),
+                error: function (model, xhr) {
+                    console.log(xhr.response);
+                }.bind(this)
+            });
         },
 
         showAuthorization: function () {
             alert('You have to be authorized');
-        },
-
-        showSaveProperties: function () {
-            // TODO refactor
-            $('#myModal').foundation('reveal', 'open'); // TODO make up an id
-            $('#save-properties').one('click', function () {
-                var form = this.$('form')[0];
-                form.name.value = $('#myModal [name=namex]').val();
-                form.is_public.value = $('#myModal [name=is_publicx]:checked').val();
-                this.is_edit = true;
-                this.set();
-                $('#myModal').foundation('reveal', 'close');
-                this.saveToModel();
-            }.bind(this));
-        },
-
-        saveToModel: function () {
-
-            this.model.save(null, {
-                success: function (model) {
-                    User.addTimer(model); // TODO call only for new?
-                    model.markClean();
-                }.bind(this),
-                error: function (model, xhr) {
-                    console.log(xhr.response); //TODO make cool
-                }.bind(this)
-            });
-            // TODO если счетчик по нолям ил меньше минимума - не сохранять
-            // TODO убрать 500 при сохранении нулей
-            // TODO если метод edit не прошел валидацию - на сервер не отправляется enddate - 500
         },
 
         render: function () {

@@ -22,8 +22,8 @@ define(['backbone'], function (Backbone) {
             date.setMilliseconds(0);
             return {
                 enddate: date,
-                name: null, // TODO check to be null on server
-                is_public: true // TODO maybe string or int
+                name: null,
+                is_public: true
             }
         },
 
@@ -117,9 +117,9 @@ define(['backbone'], function (Backbone) {
         },
 
         edit: function (dataset, countdown) {
-            // TODO validation
+            // TODO abide validation
             dataset.name = dataset.name || null;
-            dataset.is_public = !!dataset.is_public;
+            dataset.is_public = dataset.is_public == 'true';
             dataset.enddate = new Date(dataset.end.year + '-' + dataset.end.month + '-' + dataset.end.day + ' ' + dataset.end.time);
             delete dataset.end;
 

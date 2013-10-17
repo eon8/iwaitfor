@@ -7,18 +7,19 @@ html {
 
 body {
     height: 100%;
-    background-image: -webkit-linear-gradient(bottom, white, #eee);
-    background-image: linear-gradient(bottom, white, #eee);
+    background-image: -webkit-linear-gradient(bottom, white, #eef);
+    background-image: linear-gradient(bottom, white, #eef);
 }
 
 .main {
     text-align: center;
-    background-image: -webkit-linear-gradient(top, white, #ccc);
-    background-image: linear-gradient(top, white, #ccc);
+    background-image: -webkit-linear-gradient(top, white, #ccf);
+    background-image: linear-gradient(top, white, #ccf);
 }
 
 .timer {
     padding-top: 100px;
+    background: #aaf;
 }
 
 .timer input {
@@ -48,4 +49,12 @@ body {
 #timer-countdown input {
     display: inline;
     width: 3em;
+}
+
+.save-prop {
+    visibility: hidden;
+}
+
+.save-row:hover .save-prop {
+    visibility: visible;
 }

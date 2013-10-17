@@ -62,16 +62,16 @@ define(['backbone', 'router', 'auth/google'], function (Backbone, Router, Google
             return model.isNew() || _.indexOf(this.getTimerIds(), String(model.id)) != -1;
         },
 
-        addTimer: function(model) {
+        updateTimer: function(model) {
             var old_timer_ids = this.getTimerIds(),
                 new_timer_ids = _.union(old_timer_ids, String(model.id));
             if (new_timer_ids.length > old_timer_ids.length) {
                 $.cookie('auth_timer_ids', new_timer_ids, {path: '/'});
-                if (model.get('is_approved')) {
-                    Router.navigate(model.get('name'), {trigger: true, replace: true});
-                } else {
-                    Router.navigate('id/' + model.id, {trigger: true, replace: true});
-                }
+            }
+            if (model.get('is_approved')) {
+                Router.navigate(model.get('name'), {trigger: true, replace: true});
+            } else {
+                Router.navigate('id/' + model.id, {trigger: true, replace: true});
             }
         },
 
